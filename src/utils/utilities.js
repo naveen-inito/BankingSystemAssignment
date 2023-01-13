@@ -1,7 +1,5 @@
 
 
-
-
 const create_mapper = () => {    
     var map = [];
     map.length = 26;
@@ -27,6 +25,19 @@ const formatDate = (date) => {
     return [year, month, day].join('-');
 }
 
+const subtract6Months = async (date) => {
+    const dateCopy = new Date(date);
+    console.log(dateCopy)
+    dateCopy.setMonth(dateCopy.getMonth() - 6);
+    return dateCopy;
+}
+
+const getNumberOfDays = async (firstDate, secondDate) => {
+    const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+    const diffDays = Math.round(Math.abs((firstDate - secondDate) / oneDay));
+    return diffDays;
+}
+
 
 const getUserId = (username) => {
     var map = create_mapper();
@@ -39,28 +50,39 @@ const getUserId = (username) => {
             user_id += map[current_character - '97'];
         }
     }
-
-    // console.log(username, ' ---> ', user_id);
     return user_id;
 };
 
 const calculate_age = (dob) => {
-    // var dob = '19800810';
-    // var year = Number(dob.substr(0, 4));
-    // var month = Number(dob.substr(4, 2)) - 1;
-    // var day = Number(dob.substr(6, 2));
-    // var today = new Date();
-    // var age = today.getFullYear() - year;
-    // if (today.getMonth() < month || (today.getMonth() == month && today.getDate() < day)) {
-    // age--;
-    // }
-    // alert(age);
-    console.log(dob);
-    return 21;
+
+    const birthDate = dob.getDate();
+    const birthMonth = dob.getMonth()+1;
+    const birthYear = dob.getFullYear();
+
+    var d = new Date(Date.now()),
+        currentMonth = '' + (d.getMonth() + 1),
+        currentDay = '' + d.getDate(),
+        currentYear = d.getFullYear();
+
+    var age = currentYear - birthYear - 1;
+    if(currentMonth > birthMonth){
+        age++;
+    }
+    if(currentMonth==birthMonth && currentDay>=birthDate){
+        age++;
+    }
+    return age;
+}
+
+const getLastDayOfMonthYear = async (y,m) => {
+    return (new Date(y, m+1, 0).getDate());
 }
 
 
 module.exports = {
     getUserId,
-    calculate_age, formatDate
+    calculate_age, formatDate,
+    getLastDayOfMonthYear,
+    subtract6Months,
+    getNumberOfDays
 };

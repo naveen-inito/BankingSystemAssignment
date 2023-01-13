@@ -2,32 +2,23 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const { pool } = require('../db/connection');
 
-// const {validateUser, isInvalidField, generateAuthToken} = require('../utils/common');
-const {validateUser, generateAuthToken, getUserDetails, generate_account_no, getUserAccountDetails, getUserAccountDetailsOfParticularType, addMoney, generateTransactionNumber, addTransaction} = require('../utils/common');
+const {validateUser, generateAuthToken, getUserDetails, generate_account_no, getUserAccountDetails, getUserAccountDetailsOfParticularType, addMoney, generateTransactionNumber, addTransaction, issueAtmCard} = require('../utils/common');
 const {calculate_age, getUserId, formatDate} = require('../utils/utilities');
 const authMiddleware = require('../middleware/auth');
 
 const Router = express.Router();
 
-
-// const insert_account = async () => {
-
-// }
-
 Router.post('/create_account', authMiddleware, async (req, res) => {
-// Router.post('/create_account', async (req, res) => {
     try {
-        console.log("api called");
 
+        const { username, account_type, amount} = req.body;
 
-        const { user_id, account_type, amount} = req.body;
+        const user_id = getUserId(username);
 
         // Here, it checks if user already exists or not (if not it throws error)
         const user = await getUserDetails(user_id);
 
-        const {id, username, name, email, phone_no, dob, address} = user;
-
-        console.log(`${user_id}, ${account_type}, ${amount}, ${email}, ${phone_no}, ${dob}, ${address}`);
+        const {id, name, email, phone_no, dob, address} = user;
 
         // Checking if the same account_type already exists for the current user
         const result = await pool.query(
@@ -36,7 +27,6 @@ Router.post('/create_account', authMiddleware, async (req, res) => {
         );
 
         const account_row = result.rows[0];
-        console.log(JSON.stringify(account_row)+" ////");
 
         if(account_row){
             // it means this type of account already exists
@@ -59,14 +49,11 @@ Router.post('/create_account', authMiddleware, async (req, res) => {
             })
             return;
         }
-
         
         const currentDate = Date(Date.now()).toString();
         const formattedDate = formatDate(currentDate);
-        console.log(currentDate+" << ", formattedDate);
 
         // Now, creating the user account
-
         if(account_type === 'SAVINGS'){
 
             if(amount<10000){
@@ -74,9 +61,30 @@ Router.post('/create_account', authMiddleware, async (req, res) => {
                     error: "Minimum amount error"
                 })
             }
+            
+            // Now creating the account..
+            const result1 = await pool.query(
+                'INSERT INTO accounts (account_number, account_type, user_id, created_at, balance) values($1,$2,$3,$4,$5)',
+                [account_number, account_type, user_id, formattedDate, amount]
+            );
+
+            if (result1.rowCount==0) {
+                // Query has not run properly
+                res.status(400).send({
+                    message: "Unable to open account"
+                });
+                return;
+            }
 
             // We also need to issue atm card for "SAVINGS" account
+            const atmResult = await issueAtmCard(account_number, currentDate);
 
+            if(atmResult.rowCount==0){
+                // card is not issued
+                res.status(400).send({
+                    message: "Unable to open account"
+                })
+            }
 
         } else if(account_type === 'CURRENT') {
 
@@ -96,8 +104,8 @@ Router.post('/create_account', authMiddleware, async (req, res) => {
 
             // Now creating the account..
             const result1 = await pool.query(
-                'INSERT INTO accounts (account_number, account_type, user_id, created_at) values($1,$2,$3,$4)',
-                [account_number, account_type, user_id, formattedDate]
+                'INSERT INTO accounts (account_number, account_type, user_id, created_at, balance) values($1,$2,$3,$4,$5)',
+                [account_number, account_type, user_id, formattedDate, amount]
             );
 
             if (result1.rowCount==0) {
@@ -107,21 +115,10 @@ Router.post('/create_account', authMiddleware, async (req, res) => {
                 });
                 return;
             }
-
-            // Now creating the current account..
-            const result2 = await pool.query(
-                'INSERT INTO current_account (account_number, user_id, current_month_transaction_count, balance) values($1,$2,$3,$4)',
-                [account_number, user_id, 0, amount]
-            );
-
-            if (result2.rowCount==0) {
-                res.status(400).send({
-                    message: "Error running query"
-                });
-                return;
-            }
             
         } else if(account_type === 'LOAN') {
+
+            const { loan_type, duration} = req.body;
 
             // SAVINGS or CURRENT account for the user should exist
             // checking already for the entry of "user_id" in "accounts" table
@@ -131,38 +128,71 @@ Router.post('/create_account', authMiddleware, async (req, res) => {
                 [user_id]
             );
 
-            const user_rows = result.rows[0];
-            if(!user_rows){
-                // no entry for the user
-                res.status(400).send({
-                    message: "cannot create account"
-                });
+            const user_rows = result.rows;
+            const age = 30;
+
+            // Checking all the conditions for creating the loan account
+            if(!user_rows[0] || amount<500000 || age<25){
+                res.status(200).send({
+                    message: "Loan cannot be provided"
+                })
                 return;
             }
 
-            // Min age limit of 25 for opening loan account
-            if(age<18){
-                res.status(200).send({
-                    error: "Minimum age error"
+            // Can only give 40% of total deposit as loan
+            var len = user_rows.length;
+            var total_sum = 0;
+            for(var i=0; i<len; i++){
+                total_sum += user_rows.balance;
+            }
+            if(((total_sum*40)/100) < amount){
+                res.status(400).send({
+                    message: "Loan cannot be provided"
                 })
                 return;
             }
 
             // work here on type of loans and amount that user can get, and wants to get
+            var loan_interest = 0;
+            if(loan_type=="HOME"){
+                loan_interest = 7;
+            }else if(loan_type=="CAR"){
+                loan_interest = 8;
+            }else if(loan_type=="PERSONAL"){
+                loan_interest = 12;
+            }else if(loan_type=="BUSINESS"){
+                loan_interest = 15;
+            }else{
+                res.status(200).send({
+                    message: "Loan cannot be provided"
+                })
+                return;
+            }
 
+            // Now creating the account..
+            const result1 = await pool.query(
+                'INSERT INTO accounts (account_number, account_type, user_id, created_at, balance) values($1,$2,$3,$4,$5)',
+                [account_number, account_type, user_id, formattedDate, amount]
+            );
+            const result2 = await pool.query(
+                'INSERT INTO loan_account (account_number, loan_type, interest, amount, duration, status) values($1,$2,$3,$4,$5,$6)',
+                [account_number, loan_type, loan_interest, amount, duration, 'active']
+            );
+
+            if (result1.rowCount==0 || result2.rowCount==0) {
+                // Query has not run properly
+                res.status(400).send({
+                    message: "Loan cannot be provided"
+                });
+                return;
+            }
 
         }
 
         res.status(201).send({
             message: "Account created"
-        });        
+        });
 
-        // result1 = await pool.query(
-        //     'select id, email, password from bank_user where email = $1',
-        //     [email]
-        // );
-
-        // res.status(201).send();
     } catch (error) {
         res.status(400).send({
             signup_error: 'Error while creating the account'
@@ -170,13 +200,6 @@ Router.post('/create_account', authMiddleware, async (req, res) => {
         console.error(error, "<-error");
     }
 });
-
-
-
-
-
-
-
 
 
 module.exports = Router;

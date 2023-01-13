@@ -2,21 +2,116 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const { pool } = require('../db/connection');
 
-// const {validateUser, isInvalidField, generateAuthToken} = require('../utils/common');
-const {validateUser, generateAuthToken, getUserDetails, generate_account_no, getUserAccountDetails, getUserAccountDetailsOfParticularType, subtractMoney, addMoney, generateTransactionNumber, addTransaction} = require('../utils/common');
+const {validateUser, generateAuthToken, getUserDetails, generate_account_no, getUserAccountDetails, getUserAccountDetailsOfParticularType, subtractMoney, addMoney, generateTransactionNumber, addTransaction, getCurrentDayWithdrawAmount, getCurrentMonthAtmWithdrawCount, getCurrentDayWithdrawalAmount, subtractMoneyFromLoanAccount, getUserAccountDetailsOfLoanAccount} = require('../utils/common');
 const {calculate_age, getUserId, formatDate} = require('../utils/utilities');
 const authMiddleware = require('../middleware/auth');
 
 const Router = express.Router();
 
+Router.post('/loan_repayment', authMiddleware, async (req, res) => {
+    try {
+        // deposit money facility is only applicable in "CURRENT" account
+        // i.e., user deposits money to his own account
+
+        const { username, amount} = req.body;
+        const user_id = getUserId(username);
+
+        // const accountDetails = await getUserAccountDetailsOfParticularType(user_id, "LOAN");
+        const accountDetails = await getUserAccountDetailsOfLoanAccount(user_id);
+        const account = accountDetails.rows[0];
+
+        console.log(account);
+
+        // If receiver does not have "LOAN" account..
+        if(!account){
+            res.status(400).send({
+                message: "User account does not exist"
+            })
+        }
+
+        // Checking whether the repay amount is not excedding 10% of total loan amount
+        const totalLoanAmount = account.amount;
+        if(amount>0.1*totalLoanAmount){
+            res.status(400).send({
+                message: "Loan repayment amount excedded"
+            })
+            return;
+        }
+
+        // Checking whether the repay amount is not excedding the remaining loan amount
+        const result1 = await pool.query(
+            `SELECT SUM(amount) FROM transaction WHERE
+            account_no = $1 AND transaction_type = $2`,
+            [account.account_number, "LOAN_REPAYMENT"]
+        );
+        var loanAmountRepayed = 0; // It will be negative
+
+        if(result1.rows[0].sum!=null)
+            loanAmountRepayed = result1.rows[0].sum; // It will be negative
+        
+
+        console.log(account.account_number,", ",amount,", LOAN ",totalLoanAmount,", ", loanAmountRepayed,", ",parseInt(parseInt(totalLoanAmount) + parseInt(loanAmountRepayed)));
+
+        if(amount > parseInt(parseInt(totalLoanAmount) + parseInt(loanAmountRepayed))){
+            res.status(400).send({
+                message: "Loan repayment amount excedded"
+            })
+            return;
+        }
+
+        // Now, finally deposit money in Receiver's "CURRENT" account
+        const subtractMoneyResponse = await subtractMoney(account.account_number, amount, 'LOAN');
+        console.log(subtractMoneyResponse)
+
+        // Now, we also need to keep this transaction in "transaction" table
+        const transaction_number = generateTransactionNumber();
+
+        const currentDate = Date(Date.now()).toString();
+        const formattedDate = formatDate(currentDate);
+
+        const result = await addTransaction(transaction_number, "LOAN_REPAYMENT", account.account_number, null, amount, formattedDate, parseInt(parseInt(totalLoanAmount) + parseInt(loanAmountRepayed)), null);
+
+        if (result.rowCount==0) {
+            // Query has not run properly
+            res.status(400).send({
+                message: "Loan amount couldn't be payed"
+            });
+            return;
+        }
+
+        if(amount == parseInt(parseInt(totalLoanAmount) + parseInt(loanAmountRepayed))){
+            // Then the loan is completed
+            // We need to set its status as 'inactive'
+            const update_status = await pool.query(
+                `UPDATE loan_account
+                set status = 'inactive'
+                where account_number = $1`,
+                [account.account_number]
+            );
+        }
+
+        res.status(200).send({
+            message: "Loan amount successfully payed"
+        });
+        
+    } catch (error) {
+        res.status(400).send({
+            message: "Loan amount couldn't be payed"
+        });
+        console.error(error, "<-error");
+    }
+});
 
 Router.post('/deposit_money', authMiddleware, async (req, res) => {
     try {
-
-        // deposit money facility should is only applicable in "CURRENT" account
+        // deposit money facility is only applicable in "CURRENT" account
         // i.e., user deposits money to his own account
 
-        const {user_id, receiver_username, amount} = req.body;
+        // const { username, receiver_username, amount} = req.body;
+        const { username, account_type, amount} = req.body;
+        const user_id = getUserId(username);
+
+        const receiver_username = username;
 
         // receiver must have the "CURRENT" account
         const receiverUserId = getUserId(receiver_username);
@@ -24,7 +119,7 @@ Router.post('/deposit_money', authMiddleware, async (req, res) => {
         
         console.log(receiverDetails);
         console.log(JSON.stringify(receiverDetails));
-        const accountDetails = await getUserAccountDetailsOfParticularType(receiverUserId, "CURRENT");
+        const accountDetails = await getUserAccountDetailsOfParticularType(receiverUserId, account_type);
         const account = accountDetails.rows[0];
 
         // If receiver does not have "CURRENT" account..
@@ -34,8 +129,20 @@ Router.post('/deposit_money', authMiddleware, async (req, res) => {
             })
         }
 
+        var finalAmount = amount;
+
+
+        // If account is "CURRENT", then we need to put transaction charge of 0.5% of amount
+        if(account_type=='CURRENT'){
+            const transaction_charge = Math.min((amount/100) * 0.5, 500);
+            const subtractMoneyResponse = await subtractMoney(account.account_number, transaction_charge, account_type);
+            finalAmount -= transaction_charge;
+        }
+
+        const amountBeforeTransaction = account.balance;
+
         // Now, finally deposit money in Receiver's "CURRENT" account
-        const addMoneyResponse = await addMoney(account.account_number, amount, "CURRENT");
+        const addMoneyResponse = await addMoney(account.account_number, finalAmount, "CURRENT");
         console.log(addMoneyResponse);
         console.log(JSON.stringify(addMoneyResponse) + "<< response of add money");
 
@@ -48,7 +155,11 @@ Router.post('/deposit_money', authMiddleware, async (req, res) => {
         // Now, we also need to keep this transaction in "transaction" table
         const transaction_number = generateTransactionNumber();
 
-        const result = await addTransaction(transaction_number, "DEPOSIT", user_id, receiverUserId, null, account.account_number, amount);
+        const currentDate = Date(Date.now()).toString();
+        const formattedDate = formatDate(currentDate);
+
+
+        const result = await addTransaction(transaction_number, "DEPOSIT", null, account.account_number, finalAmount, formattedDate, null, amountBeforeTransaction);
 
         if (result.rowCount==0) {
             // Query has not run properly
@@ -73,12 +184,14 @@ Router.post('/deposit_money', authMiddleware, async (req, res) => {
 
 Router.post('/withdraw_from_bank', authMiddleware, async (req, res) => {
     try {
-        const {id, amount, account_type} = req.body;
+        const {username, amount, account_type} = req.body;
 
-        const user_id = id
-        // console.log(`${user_id} ${amount} ${account_type} <<<`);
+        const user_id = getUserId(username)
         const accountDetails = await getUserAccountDetailsOfParticularType(user_id, account_type);
         const account = accountDetails.rows[0];
+
+        const currentDate = Date(Date.now()).toString();
+        const formattedDate = formatDate(currentDate);
 
         console.log(account)
         console.log(JSON.stringify(accountDetails))
@@ -99,6 +212,19 @@ Router.post('/withdraw_from_bank', authMiddleware, async (req, res) => {
             return;
         }
 
+        // Checking whether total withdraw amount for current day does not exceed by 50000
+        const currentDayWithdrawalAmountResult = await getCurrentDayWithdrawalAmount(account.account_number, formattedDate);
+        const currentDayWithdrawalAmount = currentDayWithdrawalAmountResult.rows[0].sum;
+        const total_amount = parseInt(currentDayWithdrawalAmount) + parseInt(amount);
+        if(total_amount > 50000){
+            res.status(200).send({
+                message: "Money withdrawal amount limit excedded",
+            })
+            return;
+        }
+
+        const amount_before_transaction = account.balance;
+
         // Now, finally deposit money in Receiver's "CURRENT" account
         const subtractMoneyResponse = await subtractMoney(account.account_number, amount, account_type);
         console.log(subtractMoneyResponse);
@@ -114,7 +240,7 @@ Router.post('/withdraw_from_bank', authMiddleware, async (req, res) => {
         // Now, we also need to keep this transaction in "transaction" table
         const transaction_number = generateTransactionNumber();
 
-        const result = await addTransaction(transaction_number, "WITHDRAW_FROM_BANK", user_id, null, account.account_number, null, amount);
+        const result = await addTransaction(transaction_number, "WITHDRAW_FROM_BANK", account.account_number, null, amount, formattedDate, amount_before_transaction, null);
 
         if (result.rowCount==0) {
             // Query has not run properly
@@ -138,14 +264,13 @@ Router.post('/withdraw_from_bank', authMiddleware, async (req, res) => {
 
 Router.post('/withdraw_from_atm', authMiddleware, async (req, res) => {
     try {
-        const {id, amount, account_type, card_number, cvv} = req.body;
+        const { username, amount, account_type, card_number, cvv} = req.body;
 
-        const user_id = id
+        const user_id = getUserId(username);
         const accountDetails = await getUserAccountDetailsOfParticularType(user_id, account_type);
         const account = accountDetails.rows[0];
 
         // const verify = await verifyCardDetails(card_number, cvv);
-
         console.log(account)
         console.log(JSON.stringify(accountDetails))
         console.log(JSON.stringify(account))
@@ -165,14 +290,44 @@ Router.post('/withdraw_from_atm', authMiddleware, async (req, res) => {
             return;
         }
 
-        // Now, finally deposit money in Receiver's "CURRENT" account
+        // const currentDate = Date(Date.now());
+        const currentDate = Date(Date.now());
+        const formattedDate = formatDate(currentDate);
+
+        // Checking whether total withdraw amount for current day does not exceed by 50000
+        const currentDayWithdrawalAmountResult = await getCurrentDayWithdrawalAmount(account.account_number, formattedDate);
+        const currentDayWithdrawalAmount = currentDayWithdrawalAmountResult.rows[0].sum;
+
+        const total_amount = parseInt(-1 * currentDayWithdrawalAmount) + parseInt(amount);
+
+        if(total_amount > 50000){
+            res.status(200).send({
+                message: "Money withdrawal amount limit excedded",
+            })
+            return;
+        }
+
+        // Checking whether total monthly withdraw by atm does not exceed by 5 for a month
+        const currentMonthWithdrawCount = await getCurrentMonthAtmWithdrawCount(account.account_number, formattedDate);
+        
+        var amount_before_transaction = account.balance;
+        if(currentMonthWithdrawCount>=5){
+            // Now, charge 500 for each withdraw
+            const penaltyForLimit = await subtractMoney(account.account_number, 500, account_type);
+            if(penaltyForLimit.rowCount==0){
+                res.status(400).send({
+                    message: "Could not complete the transaction"
+                });
+                return;
+            }
+            amount_before_transaction -= 500;
+        }
+
         const subtractMoneyResponse = await subtractMoney(account.account_number, amount, account_type);
-        console.log(subtractMoneyResponse);
-        console.log(JSON.stringify(subtractMoneyResponse) + "<< response of add money");
 
         if(subtractMoneyResponse.rowCount==0){
             res.status(400).send({
-                message: "Money could not be added"
+                message: "Money could not be withdrawn from ATM"
             });
             return;
         }
@@ -180,7 +335,7 @@ Router.post('/withdraw_from_atm', authMiddleware, async (req, res) => {
         // Now, we also need to keep this transaction in "transaction" table
         const transaction_number = generateTransactionNumber();
 
-        const result = await addTransaction(transaction_number, "WITHDRAW_FROM_BANK", user_id, null, account.account_number, null, amount);
+        const result = await addTransaction(transaction_number, "WITHDRAW_FROM_ATM", account.account_number, null, amount, formattedDate, amount_before_transaction, null);
 
         if (result.rowCount==0) {
             // Query has not run properly
@@ -191,7 +346,7 @@ Router.post('/withdraw_from_atm', authMiddleware, async (req, res) => {
         }
 
         res.status(200).send({
-            message: "Money withdrawn from bank"
+            message: "Money withdrawn from bank using ATM"
         });
         
     } catch (error) {
@@ -202,15 +357,12 @@ Router.post('/withdraw_from_atm', authMiddleware, async (req, res) => {
     }
 });
 
-Router.post('/transfer_money', async (req, res) => {
+Router.post('/transfer_money', authMiddleware, async (req, res) => {
     try {
 
-        // deposit money facility should is only applicable in "CURRENT" account
-        // i.e., user deposits money to his own account
+        const {username, receiver_username, amount} = req.body;
 
-        const {user_id, receiver_username, amount} = req.body;
-
-        const senderUserId = user_id;
+        const senderUserId = getUserId(username);
         const senderDetails = await getUserDetails(senderUserId);
         const senderAccountDetails = await getUserAccountDetailsOfParticularType(senderUserId, "CURRENT");
         const senderAccount = senderAccountDetails.rows[0];
@@ -238,6 +390,9 @@ Router.post('/transfer_money', async (req, res) => {
             })
         }
 
+        const senderBeforeTransactionAmount = senderAccount.balance;
+        const receiverBeforeTransactionAmount = receiverAccount.balance;
+
         // Withdraw money from Sender's "CURRENT" account
         const subtractMoneyResponse = await subtractMoney(senderAccount.account_number, amount, "CURRENT");
         if(subtractMoneyResponse.rowCount==0){
@@ -249,7 +404,6 @@ Router.post('/transfer_money', async (req, res) => {
         // Deposit money in Receiver's "CURRENT" account
         const addMoneyResponse = await addMoney(receiverAccount.account_number, amount, "CURRENT");
         console.log(addMoneyResponse);
-        console.log(JSON.stringify(addMoneyResponse) + "<< response of add money");
 
         if(addMoneyResponse.rowCount==0){
             res.status(400).send({
@@ -257,10 +411,21 @@ Router.post('/transfer_money', async (req, res) => {
             });
         }
 
+        var finalAmount = amount;
+
+        // If account is "CURRENT", then we need to put transaction charge of 0.5% of amount
+        const transaction_charge = Math.min((amount/100) * 0.5, 500);
+        const subtractMoneyResponse1 = await subtractMoney(senderAccount.account_number, transaction_charge, "CURRENT");
+        finalAmount -= transaction_charge;
+
+
         // Now, we also need to keep this transaction in "transaction" table
         const transaction_number = generateTransactionNumber();
 
-        const result = await addTransaction(transaction_number, "TRANSFER", senderUserId, receiverUserId, senderAccount.account_number, receiverAccount.account_number, amount);
+        const currentDate = Date(Date.now()).toString();
+        const formattedDate = formatDate(currentDate);
+
+        const result = await addTransaction(transaction_number, "TRANSFER", senderAccount.account_number, receiverAccount.account_number, amount, formattedDate, senderBeforeTransactionAmount, receiverBeforeTransactionAmount);
 
         if (result.rowCount==0) {
             // Query has not run properly

@@ -8,12 +8,5 @@ const pool = new Pool({
     dialect: 'postgres',
     port: 5432
 });
-// const pool = new Pool({
-//   host: 'localhost',
-//   user: 'postgres',
-//   password: 'naveen',
-//   port: 5432,
-//   database: 'banksystem'
-// });
 
 module.exports = { pool };
