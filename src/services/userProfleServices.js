@@ -9,7 +9,7 @@ const secret = process.env.SECRET;
 
 const getUserDetails = async (user_id) => {
     const result = await pool.query(
-        'select * from bank_user where id = $1',
+        'select * from users where id = $1',
         [user_id]
     );
 
@@ -19,7 +19,7 @@ const getUserDetails = async (user_id) => {
 
 const validateUser = async (username, password) => {
     const result = await pool.query(
-        'select id, username, password from bank_user where username = $1',
+        'select id, username, password from users where username = $1',
         [username]
     );
     const user = result.rows[0];
@@ -40,7 +40,7 @@ const validateUser = async (username, password) => {
 
 const userExists = async (email) => {
     const result = await pool.query(
-        'select count(*) as count from bank_user where email=$1',
+        'select count(*) as count from users where email=$1',
         [email]
     );
     
@@ -53,7 +53,7 @@ const registerUser = async ({username, name, email, password, phone_no, dob, add
     const userId = getUserId(username);
     const hashedPassword = await bcrypt.hash(password, 8);
     await pool.query(
-        'insert into bank_user(id, username, name, email, password, phone_no, dob, address) values($1,$2,$3,$4, $5, $6, $7, $8)',
+        'insert into users(id, username, name, email, password, phone_no, dob, address) values($1,$2,$3,$4, $5, $6, $7, $8)',
         [userId, username, name, email, hashedPassword, phone_no, dob, address]
     );
 }
