@@ -22,7 +22,6 @@ const getUserDetails = async (user_id) => {
         console.log("not found");
         throw new Error();
     }
-
 }
 
 const getUserAccountDetails = async (receiverUserId) => {

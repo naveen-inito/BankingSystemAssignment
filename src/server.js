@@ -15,9 +15,11 @@ app.use(servicesRoute);
 app.use(transactionsRoute);
 app.use(detailsRoute);
 
-// const jobForDeductingMoney = require("./cron/jobForDeductingMoney");
-// const jobForCalculatingInterestOnSavingAccount = require("./cron/jobForCalculatingInterestOnSavingAccount");
-// const jobForCalculatingInterestOnLoanAccount = require("./cron/jobForCalculatingInterestOnLoanAccount");
+const jobForDeductingMoney = require("./cron/jobForDeductingMoney");
+const jobForCalculatingInterestOnSavingAccount = require("./cron/jobForCalculatingInterestOnSavingAccount");
+const jobForCalculatingInterestOnLoanAccount = require("./cron/jobForCalculatingInterestOnLoanAccount");
+
+console.log("in branch one");
 
 app.listen(PORT, () => {
   console.log(`server started on port ${PORT}`);
