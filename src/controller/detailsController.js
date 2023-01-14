@@ -1,4 +1,6 @@
-const { getAccountNumber, getAllTransactionsOfUser, getAllTransactionsOfAccount } = require("../services/accountServices");
+const { getAccountNumber, getAllTransactionsOfUser, getAllTransactionsOfAccount, getUserAccountDetailsOfLoanAccount, getUserAccountDetailsOfParticularType } = require("../services/accountServices");
+const { getUserId } = require("../utils/utils");
+
 
 
 const get_account_details = async (req, res) => {
@@ -39,7 +41,7 @@ const get_passbook = async (req, res) => {
 
         const user_id = getUserId(username);
 
-        const aRow = getAccountNumber(user_id, account_type);
+        const aRow = await getAccountNumber(user_id, account_type);
 
         if(!aRow){
             res.status(200).send({

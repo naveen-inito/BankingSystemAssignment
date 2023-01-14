@@ -1,11 +1,9 @@
 
-
 const { pool } = require('../db/connection');
-const {subtractMoney, generateTransactionNumber, addTransaction, getTransactionCountForAccount, getMinBalance, addMoney} = require("../utils/common")
 
 const schedule = require('node-schedule');
-const { formatDate } = require('../utils/utilities');
-
+const { subtractMoney, addTransaction, getTransactionCountForAccount, getMinBalance, addMoney } = require('../services/accountServices');
+const { generateTransactionNumber, formatDate } = require('../utils/utils');
 
 // Job for calculating interest on "SAVINGS" account...
 // This job should run "ONCE A MONTH"

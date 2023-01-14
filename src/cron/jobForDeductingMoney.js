@@ -1,10 +1,10 @@
 
 
 const { pool } = require('../db/connection');
-const {subtractMoney, generateTransactionNumber, addTransaction, getTransactionCountForAccount, getMinBalance} = require("../utils/common")
 
 const schedule = require('node-schedule');
-const { formatDate } = require('../utils/utilities');
+const { subtractMoney, addTransaction, getTransactionCountForAccount, getMinBalance } = require('../services/accountServices');
+const { generateTransactionNumber, formatDate } = require('../utils/utils');
 
 
 // This job should run "ONCE A MONTH"

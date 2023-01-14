@@ -1,6 +1,7 @@
-const { getLoanAmountRepayed, updateLoanStatus, verifyCardDetails } = require("../services/accountServices");
-const { getUserAccountDetailsOfLoanAccount } = require("../utils/common");
-const { getUserId, getUserDetails } = require("../utils/utils");
+const { getLoanAmountRepayed, updateLoanStatus, getUserAccountDetailsOfLoanAccount, subtractMoney, getUserAccountDetailsOfParticularType, addMoney, addTransaction, getCurrentDayWithdrawalAmount, getCurrentMonthAtmWithdrawCount } = require("../services/accountServices");
+const { verifyCardDetails } = require("../services/atmServices");
+const { getUserDetails } = require("../services/userProfleServices");
+const { getUserId, generateTransactionNumber, formatDate } = require("../utils/utils");
 
 
 const loan_repayment = async (req, res) => {
@@ -11,7 +12,6 @@ const loan_repayment = async (req, res) => {
         const { username, amount} = req.body;
         const user_id = getUserId(username);
 
-        // const accountDetails = await getUserAccountDetailsOfParticularType(user_id, "LOAN");
         const accountDetails = await getUserAccountDetailsOfLoanAccount(user_id);
         const account = accountDetails.rows[0];
 
@@ -33,7 +33,7 @@ const loan_repayment = async (req, res) => {
 
         // Checking whether the repay amount is not excedding the remaining loan amount
         
-        var loanAmountRepayed = getLoanAmountRepayed(account.account_number); // It will be negative
+        var loanAmountRepayed = await getLoanAmountRepayed(account.account_number); // It will be negative
         if(loanAmountRepayed==null)
             loanAmountRepayed = 0;
 
@@ -53,6 +53,8 @@ const loan_repayment = async (req, res) => {
 
         const currentDate = Date(Date.now()).toString();
         const formattedDate = formatDate(currentDate);
+
+        console.log(parseInt(parseInt(totalLoanAmount) + parseInt(loanAmountRepayed)),",,", totalLoanAmount,", ",loanAmountRepayed)
 
         const result = await addTransaction(transaction_number, "LOAN_REPAYMENT", account.account_number, null, amount, formattedDate, parseInt(parseInt(totalLoanAmount) + parseInt(loanAmountRepayed)), null);
 
@@ -195,8 +197,6 @@ const withdraw_from_bank = async (req, res) => {
 
         // Now, finally deposit money in Receiver's "CURRENT" account
         const subtractMoneyResponse = await subtractMoney(account.account_number, amount, account_type);
-        console.log(subtractMoneyResponse);
-        console.log(JSON.stringify(subtractMoneyResponse) + "<< response of add money");
 
         if(subtractMoneyResponse.rowCount==0){
             res.status(400).send({

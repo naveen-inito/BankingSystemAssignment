@@ -1,12 +1,14 @@
 const jwt = require('jsonwebtoken');
 const { pool } = require('../db/connection');
+const dotenv = require('dotenv');
+dotenv.config();
+const secret = process.env.SECRET;
 
 const authMiddleware = async function (req, res, next) {
 
     try {
 
         const token = req.header('Authorization').split(' ')[1];
-        console.log(token)
 
         const decoded = jwt.verify(token, secret);
 

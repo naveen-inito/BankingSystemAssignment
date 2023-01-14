@@ -1,13 +1,14 @@
 
-const { userExists, registerUser } = require("../services/userProfleServices");
-const { generateAuthToken } = require("../utils/utils");
+const { userExists, registerUser, validateUser, generateAuthToken } = require("../services/userProfleServices");
 
 const signUp = async (req, res) => {
     try {
+        console.log(req.body);
         const { username, name, email, password, phone_no, dob, address} = req.body;
 
-        const doesUserExist = await userExists(email);
-        if (!doesUserExist) {
+        const userCount = await userExists(email);
+        
+        if (userCount>0) {
             return res.status(400).send({
                 signup_error: 'User with this email address already exists.'
             });
@@ -37,7 +38,6 @@ const signIn = async (req, res) => {
                 sigin_error: 'Email/password does not match.'
             });
         }
-
         // NOW, the user is already validated
 
         // handle the case when user is already logged in

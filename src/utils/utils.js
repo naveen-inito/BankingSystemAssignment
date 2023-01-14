@@ -78,11 +78,40 @@ const getLastDayOfMonthYear = async (y,m) => {
     return (new Date(y, m+1, 0).getDate());
 }
 
+const generateTransactionNumber = () => {
+    const number = BigInt(generate_account_no(15));
+    return number;
+}
+
+const makeid = (length, character_set) => {
+    var result = "";
+    var characters = character_set;
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+};
+
+
+const generate_account_no = (length) => {
+    var character_set1 = "123456789";
+    var result1 = makeid(1, character_set1);
+
+    var character_set2 = "0123456789";
+    var result2 = makeid(length - 1, character_set2);
+
+    var result = result1 + result2;
+    return result;
+}
 
 module.exports = {
     getUserId,
     calculate_age, formatDate,
     getLastDayOfMonthYear,
     subtract6Months,
-    getNumberOfDays
+    getNumberOfDays,
+    generate_account_no,
+    generateTransactionNumber,
+    makeid
 }

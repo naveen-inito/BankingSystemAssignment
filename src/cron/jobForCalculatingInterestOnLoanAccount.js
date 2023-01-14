@@ -1,10 +1,10 @@
 
 
 const { pool } = require('../db/connection');
-const {subtractMoney, generateTransactionNumber, addTransaction, getTransactionCountForAccount, getMinBalance, getMinBalanceOfLoanAccount, addMoney} = require("../utils/common")
 
 const schedule = require('node-schedule');
-const { formatDate, getLastDayOfMonthYear, subtract6Months } = require('../utils/utilities');
+const { subtractMoney, addTransaction, getTransactionCountForAccount, addMoney, getMinBalance, getMinBalanceOfLoanAccount } = require('../services/accountServices');
+const { generateTransactionNumber, formatDate, getLastDayOfMonthYear, subtract6Months } = require('../utils/utils');
 
 // Job for calculating interest on "LOAN" account...
 // This job should run "ONCE PER DAY"

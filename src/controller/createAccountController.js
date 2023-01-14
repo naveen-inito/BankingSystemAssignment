@@ -1,9 +1,10 @@
 
 
 const { pool } = require('../db/connection');
-const { getUserAccount, getAllUserAccounts, getTotalDepositsOfUser, createLoanAccount } = require('../services/accountServices');
+const { getUserAccount, getAllUserAccounts, getTotalDepositsOfUser, createLoanAccount, accountEntry } = require('../services/accountServices');
+const { issueAtmCard } = require('../services/atmServices');
 const { getUserDetails } = require('../services/userProfleServices');
-const { getUserId } = require('../utils/utils');
+const { getUserId, formatDate, generate_account_no, calculate_age } = require('../utils/utils');
 
 
 const create_account = async (req, res) => {
@@ -25,8 +26,9 @@ const create_account = async (req, res) => {
         const {id, name, email, phone_no, dob, address} = user;
 
         // Checking if the same account_type already exists for the current user
-        const account_row = getUserAccount(user_id, account_type);
+        const account_row = await getUserAccount(user_id, account_type);
 
+        // console.log(account_row + "<<")
         if(account_row){
             // it means this type of account already exists
             res.status(200).send({
@@ -117,9 +119,9 @@ const create_account = async (req, res) => {
             // checking already for the entry of "user_id" in "accounts" table
             // if entry is there, then we can create 'LOAN' account
 
-            const user_rows = getAllUserAccounts(user_id);
+            const user_rows = await getAllUserAccounts(user_id);
             const age = 30;
-
+            
             // Checking all the conditions for creating the loan account
             if(!user_rows[0] || amount<500000 || age<25){
                 res.status(200).send({
@@ -181,4 +183,6 @@ const create_account = async (req, res) => {
 };
 
 
-module.exports = Router;
+module.exports = {
+    create_account
+};
