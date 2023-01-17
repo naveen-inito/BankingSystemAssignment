@@ -16,7 +16,7 @@
 
 ## API
 
-1. **POST** /create_account
+1. **POST** /api/user
 
 ```json
 {
@@ -30,7 +30,7 @@
 }
 ```
 
-2. **POST** /log_in
+2. **POST** /api/login
 
 ```json
 {
@@ -39,115 +39,100 @@
 }
 ```
 
-3. **POST** /create_account
+3. **POST** /api/account
 
 (Also pass jwt token in the header)
 
 ```json
 {
-    "username": "userfourth",
-    "account_type": "CURRENT",
+    "accountType": "CURRENT",
     "amount": "200000"
 }
 ```
 ```json
 {
-    "username": "userfourth",
-    "account_type": "LOAN",
-    "loan_type": "PERSONAL",
+    "accountType": "LOAN",
+    "loanType": "CAR",
     "duration": "4",
     "amount": "600000"
 }
 ```
 ```json
 {
-    "username": "userfourth",
-    "account_type": "SAVINGS",
+    "accountType": "SAVINGS",
     "amount": "60000"
 }
 ```
 
 
-4. **POST** /deposit_money
+4. **POST** /api/deposit-money
 
 (Also pass jwt token in the header)
 
 ```json
 {
-    "username": "userfourth",
-    "account_type": "CURRENT",
-    "amount": "20000"
+    "accountType": "CURRENT",
+    "amount": "2000000"
 }
 ```
 
-5. **POST** /withdraw_from_atm
+5. **POST** /api/withdraw-from-atm
 
 (Also pass jwt token in the header)
 
 ```json
 {
-    "username": "userfourth",
     "amount": "500",
-    "account_type": "SAVINGS",
-    "card_number": "5109829529368761",
-    "cvv": "455"
+    "cardNumber": "412976663691526",
+    "cvv": "911"
 }
 ```
 
-6. **POST** /withdraw_from_bank
+6. **POST** /api/withdraw-from-bank
 
 (Also pass jwt token in the header)
 
 ```json
 {
-    "username": "userfourth",
     "amount": "52000",
-    "account_type": "CURRENT"
+    "accountType": "SAVINGS"
 }
 ```
 
-7. **POST** /transfer_money
+7. **POST** /api/transfer-money
 
 (Also pass jwt token in the header)
 
 ```json
 {
-    "username": "userfourth",
-    "receiver_username": "userfirst",
+    "receiverUsername": "userfirst",
     "amount": "20000"
 }
 ```
 
 
-8. **POST** /loan_repayment
+8. **POST** /api/loan-repayment
 
 (Also pass jwt token in the header)
 
 ```json
 {
-    "username": "userfourth",
-    "amount": "50000"
+    "amount": "500000"
 }
 ```
 
-9. **GET** /get_account_details
+9. **GET** /api/account-details
+
+(Also pass jwt token in the header)
+
+
+10. **GET** /api/passbook
 
 (Also pass jwt token in the header)
 
 ```json
 {
-    "username": "userfourth"
-}
-```
-
-10. **GET** /get_passbook
-
-(Also pass jwt token in the header)
-
-```json
-{
-    "username": "userfourth",
-    "account_type": "CURRENT"
+    "accountType": "SAVINGS"
 }
 ```
 

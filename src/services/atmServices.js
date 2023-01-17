@@ -1,36 +1,34 @@
-const { makeid, formatDate } = require("../utils/utils");
-const { pool } = require('../db/connection');
+const { makeid, formatDate } = require('../utils/utils');
+const { insertIntoATM, getCardDetails } = require('../models/atmModel');
 
-const issueAtmCard = async (account_number, currentDate) => {
-    const card_number = makeid(16, "0123456789");
-    const cvv = makeid(3, "0123456789");
+const issueAtmCard = async (accountNumber) => {
+  const cardNumber = makeid(16, '0123456789');
+  const cvv = makeid(3, '0123456789');
 
-    var d = new Date();
-    var year = d.getFullYear();
-    var month = d.getMonth();
-    var day = d.getDate();
-    var expiry_Date = new Date(year + 6, month, day);
-    const expiryDate = formatDate(expiry_Date);
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = d.getMonth();
+  const day = d.getDate();
+  const expiryDateResp = new Date(year + 6, month, day);
+  const expiryDate = formatDate(expiryDateResp);
 
-    const result = await pool.query(
-        'INSERT INTO atm_card (card_number, account_number, expiry_date, cvv) values($1,$2,$3,$4)',
-        [card_number, account_number, expiryDate, cvv]
-    );
-    return result;
-}
+  const result = await insertIntoATM(cardNumber, accountNumber, expiryDate, cvv);
+  return result;
+};
 
-const verifyCardDetails = async (account_number, card_number, cvv) => {
-    const result = await pool.query(
-        `SELECT * FROM atm_card
-        WHERE account_number = $1
-        AND card_number = $2
-        AND cvv = $3`,
-        [account_number, card_number, cvv]
-    )
-    return result.rows[0];
-}
-
+const verifyCardDetails = async (accountNumber, cardNumber, cvv) => {
+  const result = await getCardDetails(cardNumber);
+  if (!result) {
+      return false;
+    }
+    console.log(result, ", ", accountNumber, ", ", cvv, ", ", result.accountNumber, ", " , (result.accountNumber === accountNumber), ", ", (result.cvv === parseInt(cvv, 10)));
+    if ((result.accountNumber === accountNumber) && (parseInt(result.cvv, 10) === parseInt(cvv, 10))) {
+      console.log(result, ", ", accountNumber, ", ", cvv);
+    return true;
+  }
+  return false;
+};
 
 module.exports = {
-    issueAtmCard, verifyCardDetails
-}
+  issueAtmCard, verifyCardDetails,
+};

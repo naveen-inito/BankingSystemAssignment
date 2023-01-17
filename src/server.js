@@ -1,56 +1,46 @@
-
+/* eslint-disable no-unused-vars */
+/* eslint-disable quotes */
 const express = require('express');
-// const authRoute = require('./routes/auth');
-// const servicesRoute = require('./routes/services');
-// const transactionsRoute = require('./routes/transaction');
-// const detailsRoute = require('./routes/details');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// --- Previous method ---
 app.use(express.json());
-// app.use(authRoute);
-// app.use(servicesRoute);
-// app.use(transactionsRoute);
-// app.use(detailsRoute);
 
-const { create_account } = require('./controller/createAccountController');
+const { createAccount } = require('./controller/accountController');
 const { signUp, signIn } = require('./controller/userProfileController');
-const { get_account_details, get_passbook } = require('./controller/detailsController');
-const { loan_repayment, deposit_money, withdraw_from_bank, withdraw_from_atm, transfer_money } = require('./controller/transactionController');
-
+const { getAccountDetails, getPassbook } = require('./controller/detailsController');
+const {
+  loanRepayment, depositMoney, withdrawFromBank, withdrawFromAtm, transferMoney,
+} = require('./controller/transactionController');
 
 const authMiddleware = require('./middleware/auth');
-
 
 // ----- API's -----
 
 // user signup and login api's
-app.post("/create_user", signUp);
-app.post("/log_in", signIn);
+app.post("/api/user", signUp);
+app.post("/api/login", signIn);
 
 // create account api's
-app.post("/create_account", authMiddleware, create_account);
+app.post("/api/account", authMiddleware, createAccount);
 
 // show details api's
-app.get("/get_account_details", authMiddleware, get_account_details);
-app.get("/get_passbook", authMiddleware, get_passbook);
+app.get("/api/account-details", authMiddleware, getAccountDetails);
+app.get("/api/passbook", authMiddleware, getPassbook);
 
 // transaction api's
-app.post("/loan_repayment", authMiddleware, loan_repayment);
-app.post("/deposit_money", authMiddleware, deposit_money);
-app.post("/withdraw_from_bank", authMiddleware, withdraw_from_bank);
-app.post("/withdraw_from_atm", authMiddleware, withdraw_from_atm);
-app.post("/transfer_money", authMiddleware, transfer_money);
+app.post("/api/loan-repayment", authMiddleware, loanRepayment);
+app.post("/api/deposit-money", authMiddleware, depositMoney);
+app.post("/api/withdraw-from-bank", authMiddleware, withdrawFromBank);
+app.post("/api/withdraw-from-atm", authMiddleware, withdrawFromAtm);
+app.post("/api/transfer-money", authMiddleware, transferMoney);
 
 // Cron jobs
 const jobForDeductingMoney = require("./cron/jobForDeductingMoney");
 const jobForCalculatingInterestOnSavingAccount = require("./cron/jobForCalculatingInterestOnSavingAccount");
 const jobForCalculatingInterestOnLoanAccount = require("./cron/jobForCalculatingInterestOnLoanAccount");
-
-// console.log("in branch one");
 
 app.listen(PORT, () => {
   console.log(`server started on port ${PORT}`);

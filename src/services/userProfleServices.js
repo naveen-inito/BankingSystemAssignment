@@ -1,80 +1,109 @@
-const { pool } = require('../db/connection');
-const { getUserId } = require("../utils/utils");
+/* eslint-disable max-len */
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
 const dotenv = require('dotenv');
+const { getUserId } = require('../utils/utils');
+const { validateSignUp } = require('../validation/users');
+const { fetchUserDetails, fetchIdAndPasswordOfUser, insertIntoUsers } = require('../models/userModel');
+
 dotenv.config();
 const secret = process.env.SECRET;
 
-const getUserDetails = async (user_id) => {
-    const result = await pool.query(
-        'select * from users where id = $1',
-        [user_id]
-    );
-
-    const user = result.rows[0];
-    return user;
-}
-
-const validateUser = async (username, password) => {
-    const result = await pool.query(
-        'select id, username, password from users where username = $1',
-        [username]
-    );
-    const user = result.rows[0];
-    if (user) {
-        const isMatch = await bcrypt.compare(password, user.password);
-        console.log(`isMatch -> ${isMatch}`);
-        if (isMatch) {
-            return user;
-        } else {
-            throw new Error();
-        }
-    } else {
-        console.log("not found");
-        throw new Error();
-    }
+const getUserDetails = async (id) => {
+  const user = await fetchUserDetails(id);
+  return user;
 };
 
+const validateUser = async (id, password) => {
+  const user = await fetchIdAndPasswordOfUser(id);
+  if (user) {
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (isMatch) {
+      return user;
+    }
+    throw new Error();
+  } else {
+    throw new Error();
+  }
+};
 
-const userExists = async (email) => {
-    const result = await pool.query(
-        'select count(*) as count from users where email=$1',
-        [email]
-    );
-    
-    const count = result.rows[0].count;
-    return count;
-}
-
-
-const registerUser = async ({username, name, email, password, phone_no, dob, address}) => {
+const registerUser = async ({
+  username, name, email, password, phoneNo, dob, address,
+}) => {
+  try {
     const userId = getUserId(username);
     const hashedPassword = await bcrypt.hash(password, 8);
-    await pool.query(
-        'insert into users(id, username, name, email, password, phone_no, dob, address) values($1,$2,$3,$4, $5, $6, $7, $8)',
-        [userId, username, name, email, hashedPassword, phone_no, dob, address]
-    );
-}
-
-const generateAuthToken = async (user) => {
-    const { id, username } = user;
-    const token = await jwt.sign(
-        { id, username },
-        secret,
-        {
-            expiresIn: "12h",
-        }
-    );
-    return token;
+    const result = await insertIntoUsers(userId, username, name, email, hashedPassword, phoneNo, dob, address);
+    if (result.rowCount === 1) {
+      return true;
+    }
+    return false;
+  } catch (error) {
+    return false;
+  }
 };
 
+const generateAuthToken = async (user) => {
+  const { id } = user;
+  const token = await jwt.sign(
+    { id },
+    secret,
+    {
+      expiresIn: '12h',
+    },
+  );
+  return token;
+};
+
+const signUpUser = async (req) => {
+  const {
+    username, name, email, password, phoneNo, dob, address,
+  } = req;
+  req.id = getUserId(username);
+  const validateSignUpResponse = await validateSignUp(req);
+  if (!validateSignUpResponse.success) { return validateSignUpResponse; }
+
+  const registerUserResult = await registerUser({
+    username, name, email, password, phoneNo, dob, address,
+  });
+  if (registerUserResult) {
+    return ({
+      success: true,
+      message: 'User created',
+    });
+  }
+  return ({
+    success: false,
+    message: 'User could not be created',
+  });
+};
+
+const signInUser = async (req) => {
+  const { username, password } = req;
+  req.id = getUserId(username);
+  const { id } = req;
+  const user = await validateUser(id, password);
+  if (!user) {
+    return {
+      success: false,
+      message: 'Email/password does not match.',
+    };
+  }
+  // NOW, the user is already validated
+
+  const token = await generateAuthToken(user);
+  user.token = token;
+  delete user.password;
+  user.success = true;
+  return ({ success: user.success, id: user.id, token: user.token });
+};
 
 module.exports = {
-    userExists,
-    registerUser,
-    generateAuthToken,
-    getUserDetails,
-    validateUser
-}
+  signUpUser,
+  signInUser,
+  registerUser,
+  generateAuthToken,
+  getUserDetails,
+  validateUser,
+};

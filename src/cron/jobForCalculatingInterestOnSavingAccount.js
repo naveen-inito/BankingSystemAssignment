@@ -1,73 +1,58 @@
-
-const { pool } = require('../db/connection');
-
+/* eslint-disable no-await-in-loop */
+/* eslint-disable max-len */
 const schedule = require('node-schedule');
-const { subtractMoney, addTransaction, getTransactionCountForAccount, getMinBalance, addMoney } = require('../services/accountServices');
-const { generateTransactionNumber, formatDate } = require('../utils/utils');
+const { pool } = require('../db/connection');
+const { getMinBalance, addMoney, addTransaction, subtractMoney } = require('../services/transactionServices');
+const { formatDate } = require('../utils/utils');
 
 // Job for calculating interest on "SAVINGS" account...
 // This job should run "ONCE A MONTH"
 // const jobString = "*/10 * * * * *";
-const jobString = "0 0 1 * *";
+const jobString = '0 0 1 * *';
 const schduleJobForCalculatingInterestOnSavingAccount = schedule.scheduleJob(jobString, async () => {
+  try {
+    const currentDate = Date(Date.now()).toString();
+    const formattedDate = formatDate(currentDate);
 
-    try{
-        const currentDate = Date(Date.now()).toString();
-        const formattedDate = formatDate(currentDate);
+    // Getting all the savings account
+    const result = await pool.query(
+      'select * from accounts where "accountType" = \'SAVINGS\'',
+    );
 
-        // Getting all the savings account
-        const result = await pool.query(
-            `select * from accounts where account_type = 'SAVINGS'`
-        );
-        
-        const all_users = result.rows;
-        const numberOfRows = result.rows.length;
+    const allUsers = result.rows;
+    const numberOfRows = result.rows.length;
+    for (let userIterator = 0; userIterator < numberOfRows; userIterator += 1) {
+      const currentAccount = allUsers[userIterator];
 
-        for (var i = 0; i < numberOfRows; i++) {
-            const currentAccount = all_users[i]
+      const d = new Date(Date.now());
+      const prevDate = new Date(d);
+      prevDate.setDate(prevDate.getDate() - 1);
+      const month = `${prevDate.getMonth() + 1}`;
+      const day = `${prevDate.getDate()}`;
+      const year = prevDate.getFullYear();
 
-            // Code for getting minimum balance for each day for whole month
-            var d = new Date(Date.now());
-            var prevDate = new Date(d);
-            prevDate.setDate(prevDate.getDate() - 1);
-            var month = '' + (prevDate.getMonth() + 1);
-            var day = '' + prevDate.getDate();
-            var year = prevDate.getFullYear();
+      const minBalance = await getMinBalance(month, year, currentAccount.accountNumber, currentAccount.balance, day);
 
-            var no_of_days = day;
+      const numberOfDays = minBalance.length - 1;
 
-            const minBalance = await getMinBalance(month, year, currentAccount.account_number, currentAccount.balance, day);
-            console.log(minBalance);
+      let totalNRVofWholeMonth = 0;
+      for (let dayIterator = 1; dayIterator <= numberOfDays; dayIterator += 1) {
+        totalNRVofWholeMonth += minBalance[dayIterator];
+      }
+      const averageAmountOfWholeMonth = totalNRVofWholeMonth / numberOfDays;
 
-            const number_of_days = minBalance.length - 1;
+      const interestToBeAdded = parseInt(((averageAmountOfWholeMonth / 100) * 6) / 12, 10);
+      await addMoney(currentAccount.accountNumber, interestToBeAdded, 'SAVINGS');
+      await addTransaction(0, 'INTEREST_EARNED', null, currentAccount.accountNumber, interestToBeAdded, formattedDate, null, currentAccount.balance);
+      const newBalance = currentAccount.balance + interestToBeAdded;
 
-
-            var totalNRVofWholeMonth = 0;
-            for(var i=1; i<=number_of_days; i++){
-                totalNRVofWholeMonth += minBalance[i];
-            }
-
-            var averageAmountOfWholeMonth = totalNRVofWholeMonth/number_of_days;
-
-            // var interestToBeAdded = ((averageAmountOfWholeMonth/100) * 6) /12;
-            var interestToBeAdded = parseInt(((averageAmountOfWholeMonth/100) * 6) /12);
-
-            // Now, we need to add this amount to the user's savings account...
-            const result = await addMoney(currentAccount.account_number, interestToBeAdded, "SAVINGS");
-
-            // We need to also add this to the transaction
-            const result2 = await addTransaction(0, "INTEREST_EARNED", null, currentAccount.account_number, interestToBeAdded, formattedDate, null, currentAccount.balance);
-            
-            var newBalance = currentAccount.balance + interestToBeAdded;
-            
-            // If NRV falls below 100000, then we should charge Rs. 1000 to the user...
-            if(totalNRVofWholeMonth<100000){
-                const result3 = await subtractMoney(currentAccount.account_number, 1000, "SAVINGS");
-
-                const result4 = await addTransaction(0, "PENALTY_FOR_NRV", currentAccount.account_number, null, interestToBeAdded, formattedDate, newBalance, null);
-            }
-        }
-    } catch (error) {
-        console.log(error , " << error")
+      // If NRV falls below 100000, then we should charge Rs. 1000 to the user...
+      if (totalNRVofWholeMonth < 100000) {
+        await subtractMoney(currentAccount.accountNumber, 1000, 'SAVINGS');
+        await addTransaction(0, 'PENALTY_FOR_NRV', currentAccount.accountNumber, null, interestToBeAdded, formattedDate, newBalance, null);
+      }
     }
+  } catch (error) {
+    console.log(error);
+  }
 });
