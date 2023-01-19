@@ -1,18 +1,17 @@
+/* eslint-disable newline-per-chained-call */
 // eslint-disable-next-line import/no-extraneous-dependencies
 const joi = require('joi');
-const { getUserId } = require('../utils/utils');
-const { pool } = require('../db/connection');
 const { userExists } = require('../services/userServices');
 
 const validateSignUpFromJOI = (user) => {
   const singUpSchema = joi.object({
     id: joi.number().required(),
-    username: joi.string().min(3).max(40).required(),
-    name: joi.string().min(3).max(40).required(),
+    username: joi.string().regex(/^[a-z]+$/).min(3).max(40).required(),
+    name: joi.string().regex(/^[A-Za-z\s]{1,}[\.]{0,1}[A-Za-z\s]{0,}$/).min(3).max(40).required(),
     email: joi.string().email().required(),
     password: joi.string().min(6).required(),
     phoneNo: joi.string().min(10).required(),
-    dob: joi.string().min(6).required(),
+    dob: joi.date().required(),
     address: joi.string().min(6).required(),
   });
   return !!singUpSchema.validate(user).error;

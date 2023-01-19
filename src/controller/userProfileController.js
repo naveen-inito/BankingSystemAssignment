@@ -7,7 +7,6 @@ const signUp = async (req, res) => {
     const signUpUserResp = await signUpUser(req.body);
     return res.send(signUpUserResp);
   } catch (error) {
-    console.log(error);
     return res.status(400).send({
       signup_error: 'Error while signing up..',
     });
@@ -19,7 +18,6 @@ const signIn = async (req, res) => {
     const signinUserResp = await signInUser(req.body);
     return res.send(signinUserResp);
   } catch (error) {
-    console.log(error)
     return res.status(400).send({
       signin_error: 'Error while logging in..',
     });

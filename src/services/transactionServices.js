@@ -10,8 +10,8 @@ const {
 } = require('../utils/utils');
 const { verifyCardDetails } = require('./atmServices');
 
-const getAllTransactionsOfAccount = async (accountNumber) => {
-  const result = await fetchAllTransactionOfAccount(accountNumber);
+const getAllTransactionsOfAccount = async (accountNumber, page = 1, size = 50) => {
+  const result = await fetchAllTransactionOfAccount(accountNumber, page, size);
   return result;
 };
 
@@ -43,11 +43,11 @@ const getUserAccountDetailsOfParticularType = async (userId, accountType) => {
   return result;
 };
 
-const getTotalDepositsOfUser = async (userRows) => {
+const getTotalDepositsOfUser = (userRows) => {
   const len = userRows.length;
   let totalSum = 0;
   for (let rowIterator = 0; rowIterator < len; rowIterator += 1) {
-    totalSum += userRows.balance;
+    totalSum += userRows[rowIterator].balance;
   }
   return totalSum;
 };
@@ -243,11 +243,10 @@ const loanRepaymentService = async ({ id, amount }) => {
 };
 
 const depositMoneyService = async ({ id, accountType, amount }) => {
-  // deposit money facility is only applicable in "CURRENT" account
-  // i.e., user deposits money to his own account
   const accountDetails = await getUserAccountDetailsOfParticularType(id, accountType);
   const account = accountDetails.rows[0];
 
+  // console.log(accountDetails)
   if (!account) {
     return { status: false, message: 'Receiver\'s accounts does not exist' };
   }
@@ -383,6 +382,43 @@ const transferMoneyService = async (req) => {
   return { status: true, message: 'Money transferred' };
 };
 
+const handleTransactions = async (req) => {
+  const { amount } = req;
+  if (amount < 0) {
+    req.amount *= -1;
+    // It could be transfer or withdraw from bank or withdraw from atm
+    if (req.receiverUsername) {
+      // It is money transfer
+      const transferMoneyServiceResponse = await transferMoneyService(req);
+      return transferMoneyServiceResponse;
+    }
+    if (req.cardNumber && req.cvv) {
+      // It is withdraw from atm
+      req.body.accountType = 'SAVINGS';
+      const withdrawFromAtmServiceResponse = await withdrawFromAtmService(req);
+      return withdrawFromAtmServiceResponse;
+    }
+    if (req.accountType) {
+      // It is withdraw from bank
+      const withdrawFromBankServiceResponse = await withdrawFromBankService(req);
+      return withdrawFromBankServiceResponse;
+    }
+  }
+  if (amount > 0) {
+    // It could be deposit or loan repayment
+    if (req.accountType === 'LOAN') {
+      // It is loan repayment
+      const loanRepaymentResponse = await loanRepaymentService(req);
+      return loanRepaymentResponse;
+    }
+    if (req.accountType && req.amount) {
+      const depositMoneyResponse = await depositMoneyService(req);
+      return depositMoneyResponse;
+    }
+  }
+  return { status: false, message: 'Transaction could not be done' };
+};
+
 module.exports = {
   getAllTransactionsOfAccount,
   getLoanAmountRepayed,
@@ -404,4 +440,5 @@ module.exports = {
   withdrawFromBankService,
   withdrawFromAtmService,
   transferMoneyService,
+  handleTransactions,
 };

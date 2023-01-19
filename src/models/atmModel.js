@@ -2,7 +2,7 @@ const { pool } = require('../db/connection');
 
 const insertIntoATM = async (cardNumber, accountNumber, expiryDate, cvv) => {
   const result = await pool.query(
-    'INSERT INTO atm_card (cardNumber, accountNumber, expiryDate, cvv) values($1,$2,$3,$4)',
+    'INSERT INTO atm_card ("cardNumber", "accountNumber", "expiryDate", "cvv") values($1,$2,$3,$4)',
     [cardNumber, accountNumber, expiryDate, cvv],
   );
   return result;

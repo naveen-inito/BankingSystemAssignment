@@ -67,7 +67,7 @@ const createSavingsAccount = async (id, amount, accountNumber, formattedDate) =>
     return { status: false, message: 'Minimum amount error' };
   }
 
-  const accountEntryResponse = accountEntry(accountNumber, 'SAVINGS', id, formattedDate, amount);
+  const accountEntryResponse = await accountEntry(accountNumber, 'SAVINGS', id, formattedDate, amount);
   if (accountEntryResponse.rowCount === 0) {
     return { status: false, message: 'Unable to open account' };
   }
@@ -80,7 +80,7 @@ const createSavingsAccount = async (id, amount, accountNumber, formattedDate) =>
 };
 
 const createCurrentAccount = async (id, amount, accountNumber, formattedDate) => {
-  if (amount < 30000) {
+  if (amount < 100000) {
     return { status: false, message: 'Minimum amount error' };
   }
 
@@ -96,14 +96,17 @@ const createLoanAccount = async (id, amount, accountNumber, formattedDate, loanT
   const userRows = await getAllUserAccounts(id);
 
   // Checking all the conditions for creating the loan account
-  if (!userRows[0] || amount < 500000) {
-    return { status: false, message: 'Loan cannot be provided' };
+  if (!userRows[0]) {
+    return { status: false, message: 'No other bank account exists' };
+  }
+  if (amount < 500000) {
+    return { status: false, message: 'Minimum amount error' };
   }
 
   // Can only give 40% of total deposit as loan
   const totalSum = getTotalDepositsOfUser(userRows);
   if (((totalSum * 40) / 100) < amount) {
-    return { status: false, message: 'Loan cannot be provided' };
+    return { status: false, message: 'Loan amount should be lesser than 40% of total deposits' };
   }
 
   const loanInterestResponse = getLoanInterest(loanType);
@@ -112,8 +115,8 @@ const createLoanAccount = async (id, amount, accountNumber, formattedDate, loanT
   }
   const { loanInterest } = loanInterestResponse;
 
-  const accountEntryResponse = accountEntry(accountNumber, 'LOAN', id, formattedDate, amount);
-  const loanAccountEntryResponse = loanAccountEntry(accountNumber, loanType, loanInterest, amount, duration, 'active');
+  const accountEntryResponse = await accountEntry(accountNumber, 'LOAN', id, formattedDate, amount);
+  const loanAccountEntryResponse = await loanAccountEntry(accountNumber, loanType, loanInterest, amount, duration, 'active');
 
   if (accountEntryResponse.rowCount === 0 || (await loanAccountEntryResponse).rowCount === 0) {
     return { status: false, message: 'Loan cannot be provided' };
@@ -129,7 +132,7 @@ const createBankAccount = async (req) => {
   // Checking if the same accountType already exists for the current user
   const accountResponse = await getUserAccount(id, accountType);
   if (accountResponse) {
-    return { status: false, message: 'account already exists' };
+    return { status: false, message: 'Account already exists' };
   }
 
   const accountNumber = BigInt(generateAccountNo(15));
@@ -147,6 +150,7 @@ const createBankAccount = async (req) => {
 
   // Now, creating the user account
   if (accountType === 'SAVINGS') {
+    // console.log("creating savings account, ", accountNumber, ", ", typeof(accountNumber))
     const createSavingsAccountResponse = await createSavingsAccount(id, amount, accountNumber, formattedDate);
     return createSavingsAccountResponse;
   }
@@ -179,13 +183,13 @@ const getAllAccountDetails = async (id) => {
   return responseToSend;
 };
 
-const getUserPassbook = async (id, accountType) => {
+const getUserPassbook = async (id, accountType, page, size) => {
   const getAccountNumberResponse = await getAccountNumber(id, accountType);
   if (!getAccountNumberResponse) {
     return { status: false, message: 'Account does not exist' };
   }
   const { accountNumber } = getAccountNumberResponse;
-  const result = await getAllTransactionsOfAccount(accountNumber);
+  const result = await getAllTransactionsOfAccount(accountNumber, page, size);
   return result.rows;
 };
 

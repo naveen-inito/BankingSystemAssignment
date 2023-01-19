@@ -5,7 +5,6 @@ const createAccount = async (req, res) => {
     const createBankAccountResponse = await createBankAccount(req.body);
     return res.send(createBankAccountResponse);
   } catch (error) {
-    console.error(error, '<-error');
     return res.status(400).send({
       message: 'Error while creating the account',
     });

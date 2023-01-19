@@ -19,11 +19,9 @@ const issueAtmCard = async (accountNumber) => {
 const verifyCardDetails = async (accountNumber, cardNumber, cvv) => {
   const result = await getCardDetails(cardNumber);
   if (!result) {
-      return false;
-    }
-    console.log(result, ", ", accountNumber, ", ", cvv, ", ", result.accountNumber, ", " , (result.accountNumber === accountNumber), ", ", (result.cvv === parseInt(cvv, 10)));
-    if ((result.accountNumber === accountNumber) && (parseInt(result.cvv, 10) === parseInt(cvv, 10))) {
-      console.log(result, ", ", accountNumber, ", ", cvv);
+    return false;
+  }
+  if ((result.accountNumber === accountNumber) && (result.cvv === parseInt(cvv, 10))) {
     return true;
   }
   return false;

@@ -22,7 +22,6 @@ const insertIntoUsers = async (userId, username, name, email, hashedPassword, ph
     'insert into users(id, username, name, email, password, "phoneNo", dob, address) values($1,$2,$3,$4, $5, $6, $7, $8)',
     [userId, username, name, email, hashedPassword, phoneNo, dob, address],
   );
-//   throw new Error('you entered invalid details');
   return result;
 };
 

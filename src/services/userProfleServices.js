@@ -22,7 +22,6 @@ const validateUser = async (id, password) => {
     if (isMatch) {
       return user;
     }
-    throw new Error();
   } else {
     throw new Error();
   }
@@ -61,7 +60,10 @@ const signUpUser = async (req) => {
     username, name, email, password, phoneNo, dob, address,
   } = req;
   req.id = getUserId(username);
-  const validateSignUpResponse = await validateSignUp(req);
+  const user = {
+    id: req.id, username: req.username, name: req.name, email: req.email, password: req.password, phoneNo: req.phoneNo, dob: req.dob, address: req.address,
+  };
+  const validateSignUpResponse = await validateSignUp(user);
   if (!validateSignUpResponse.success) { return validateSignUpResponse; }
 
   const registerUserResult = await registerUser({
@@ -87,7 +89,7 @@ const signInUser = async (req) => {
   if (!user) {
     return {
       success: false,
-      message: 'Email/password does not match.',
+      message: 'username/password does not match.',
     };
   }
   // NOW, the user is already validated
