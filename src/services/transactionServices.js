@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable max-len */
-const { fetchAccountDetails, deductFromBalance, addToBalance } = require('../models/accountsModel');
+const { deductFromBalance, addToBalance, fetchAccountDetailsFromIdAndType } = require('../models/accountsModel');
 const { loanAccountStatus, getLoanAccountDetails, deductAmountFromLoanAccount } = require('../models/loanAccountModel');
 const {
   getSumOfAmountFromAccountNoAndTransactionType, fetchParticularMonthTransactionCountOfAccount, fetchParticularDayWithdrawAmount, fetchParticularMonthAtmWithdrawCount, insertIntoTransaction, fetchParticularMonthTransactions, fetchLoanTransactions, fetchAllTransactionOfAccount,
@@ -9,21 +9,6 @@ const {
   formatDate, getNumberOfDays, generateTransactionNumber, getUserId,
 } = require('../utils/utils');
 const { verifyCardDetails } = require('./atmServices');
-
-const getAllTransactionsOfAccount = async (accountNumber, page = 1, size = 50) => {
-  const result = await fetchAllTransactionOfAccount(accountNumber, page, size);
-  return result;
-};
-
-const getLoanAmountRepayed = async (accountNumber) => {
-  const result = await getSumOfAmountFromAccountNoAndTransactionType(accountNumber, 'LOAN_REPAYMENT');
-  return result;
-};
-
-const updateLoanStatus = async (accountNumber, status) => {
-  const result = await loanAccountStatus(accountNumber, status);
-  return result;
-};
 
 const getUserAccountDetailsOfLoanAccount = async (userId) => {
   const result = await getLoanAccountDetails(userId);
@@ -39,7 +24,7 @@ const getTransactionCountForAccount = async (accountNumber, formattedDate) => {
 };
 
 const getUserAccountDetailsOfParticularType = async (userId, accountType) => {
-  const result = await fetchAccountDetails(userId, accountType);
+  const result = await fetchAccountDetailsFromIdAndType(userId, accountType);
   return result;
 };
 
@@ -220,7 +205,7 @@ const loanRepaymentService = async ({ id, amount }) => {
   }
 
   // Checking whether the repay amount is not excedding the remaining loan amount
-  let loanAmountRepayed = await getLoanAmountRepayed(account.accountNumber); // It will be negative
+  let loanAmountRepayed = await getSumOfAmountFromAccountNoAndTransactionType(account.accountNumber); // It will be negative
   if (loanAmountRepayed == null) { loanAmountRepayed = 0; }
   const remainingAmountToPay = parseInt(parseInt(totalLoanAmount, 10) + parseInt(loanAmountRepayed, 10), 10);
   if (amount > remainingAmountToPay) {
@@ -237,7 +222,7 @@ const loanRepaymentService = async ({ id, amount }) => {
     return { status: false, message: 'Loan amount couldn\'t be payed' };
   }
   if (amount === remainingAmountToPay) {
-    const updateStatusResponse = await updateLoanStatus(account.accountNumber, 'inactive');
+    const updateStatusResponse = await loanAccountStatus(account.accountNumber, 'inactive');
   }
   return { status: true, message: 'Loan amount paid successfully' };
 };
@@ -278,7 +263,7 @@ const withdrawFromBankService = async (req) => {
   if (!account) {
     return { status: false, message: 'Account does not exist' };
   }
-  if (account.balance < amount) {
+  if (account.balance < amount || (accountType === 'SAVINGS' && amount > 20000)) {
     return { status: false, message: 'Amount excedded' };
   }
 
@@ -313,7 +298,7 @@ const withdrawFromAtmService = async (req) => {
     return { status: false, message: 'Invalid Details' };
   }
 
-  if (account.balance < amount) {
+  if (account.balance < amount || amount > 20000) {
     return { status: false, message: 'Amount excedded' };
   }
 
@@ -394,7 +379,7 @@ const handleTransactions = async (req) => {
     }
     if (req.cardNumber && req.cvv) {
       // It is withdraw from atm
-      req.body.accountType = 'SAVINGS';
+      req.accountType = 'SAVINGS';
       const withdrawFromAtmServiceResponse = await withdrawFromAtmService(req);
       return withdrawFromAtmServiceResponse;
     }
@@ -420,9 +405,6 @@ const handleTransactions = async (req) => {
 };
 
 module.exports = {
-  getAllTransactionsOfAccount,
-  getLoanAmountRepayed,
-  updateLoanStatus,
   getUserAccountDetailsOfLoanAccount,
   getTransactionCountForAccount,
   getUserAccountDetailsOfParticularType,

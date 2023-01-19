@@ -1,3 +1,5 @@
+/* eslint-disable prefer-destructuring */
+/* eslint-disable max-len */
 /* eslint-disable global-require */
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/no-extraneous-dependencies */
@@ -6,15 +8,24 @@
 // import supertest from 'supertest';
 // import app from '../../server.js';
 const supertest = require('supertest');
-const { signUp, signIn } = require('../../controller/userProfileController.js');
 const app = require('../../server.js');
 const { createBankAccount } = require('../../services/accountServices.js');
+const { getCardDetailsFromAccountNumber } = require('../../services/atmServices.js');
+const { getUserAccountDetailsOfParticularType } = require('../../services/transactionServices.js');
 const { signUpUser, signInUser } = require('../../services/userProfleServices.js');
 const { getUserId } = require('../../utils/utils.js');
 
 describe('Testing transaction api', () => {
-  let token1; let token2;
+  let token1;
+  let token2;
+  let useroneSavingsAccountDetails;
+  let usertwoSavingsAccountDetails;
+  let useroneCurrentAccountDetails;
+  let usertwoCurrentAccountDetails;
+  let useroneCardDetails;
+  let usertwoCardDetails;
   let request;
+  let result;
   beforeAll(async () => {
     request = supertest(app);
     const { pool } = require('../../db/connection.js');
@@ -45,10 +56,13 @@ describe('Testing transaction api', () => {
     token1 = resp1.token;
     const resp2 = await signInUser({ username: 'usertwo', password: 'usertwo' });
     token2 = resp2.token;
-    createBankAccount({ id: getUserId('userone'), accountType: 'CURRENT', amount: 100000 });
-    createBankAccount({ id: getUserId('userone'), accountType: 'SAVINGS', amount: 50000 });
-    createBankAccount({ id: getUserId('usertwo'), accountType: 'CURRENT', amount: 100000 });
-    createBankAccount({ id: getUserId('usertwo'), accountType: 'SAVINGS', amount: 50000 });
+    await createBankAccount({ id: getUserId('userone'), accountType: 'CURRENT', amount: 100000 });
+    await createBankAccount({ id: getUserId('userone'), accountType: 'SAVINGS', amount: 50000 });
+    await createBankAccount({ id: getUserId('usertwo'), accountType: 'CURRENT', amount: 100000 });
+    await createBankAccount({ id: getUserId('usertwo'), accountType: 'SAVINGS', amount: 50000 });
+    result = await getUserAccountDetailsOfParticularType(getUserId('userone'), 'SAVINGS');
+    useroneSavingsAccountDetails = result.rows[0];
+    useroneCardDetails = await getCardDetailsFromAccountNumber(BigInt(useroneSavingsAccountDetails.accountNumber));
   });
 
   it('Test to deposit money in user\'s account', async () => {
@@ -63,11 +77,42 @@ describe('Testing transaction api', () => {
 
   it('Test to transfer money from userone to usertwo account', async () => {
     const response = await request.put('/api/account').send({
-      amount: 5000,
+      amount: -5000,
       receiverUsername: 'usertwo',
     }).set('Authorization', `Bearer ${token1}`);
     expect(response.status).toBe(200);
-    expect(response.body.message).toBe('Money added');
+    expect(response.body.message).toBe('Money transferred');
     token2 = response.body.token;
+  });
+
+  it('Test to withdraw money from atm', async () => {
+    const response = await request.put('/api/account').send({
+      amount: -5000,
+      cardNumber: useroneCardDetails.cardNumber,
+      cvv: useroneCardDetails.cvv,
+    }).set('Authorization', `Bearer ${token1}`);
+    expect(response.status).toBe(200);
+    expect(response.body.message).toBe('Money withdrawn from bank using ATM');
+  });
+
+  it('Test to withdraw money from bank', async () => {
+    const response = await request.put('/api/account').send({
+      amount: -5000,
+      accountType: 'CURRENT',
+    }).set('Authorization', `Bearer ${token1}`);
+    expect(response.status).toBe(200);
+    expect(response.body.message).toBe('Money withdrawn from bank');
+  });
+
+  it('Test to get account details', async () => {
+    const response = await request.get('/api/account').send().set('Authorization', `Bearer ${token1}`);
+    expect(response.status).toBe(200);
+  });
+
+  it('Test to get passbook of user', async () => {
+    const response = await request.get('/api/passbook').send({
+      accountType: 'SAVINGS',
+    }).set('Authorization', `Bearer ${token1}`);
+    expect(response.status).toBe(200);
   });
 });

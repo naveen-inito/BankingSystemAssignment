@@ -16,18 +16,18 @@ const fetchUserAccounts = async (userId) => {
   return result.rows;
 };
 
-const fetchAccountDetailsFromIdAndType = async (userId, accountType) => {
+const fetchAccountsFromType = async (accountType) => {
   const result = await pool.query(
-    `SELECT * FROM accounts
-            WHERE "userId" = $1 AND "accountType" = $2`,
-    [userId, accountType],
+    'select * from accounts where "accountType" = $1',
+    [accountType],
   );
   return result;
 };
 
-const fetchAccountDetails = async (userId, accountType) => {
+const fetchAccountDetailsFromIdAndType = async (userId, accountType) => {
   const result = await pool.query(
-    'SELECT * FROM accounts WHERE "userId" = $1 AND "accountType" = $2',
+    `SELECT * FROM accounts
+            WHERE "userId" = $1 AND "accountType" = $2`,
     [userId, accountType],
   );
   return result;
@@ -57,7 +57,7 @@ module.exports = {
   insertIntoAccounts,
   fetchUserAccounts,
   fetchAccountDetailsFromIdAndType,
-  fetchAccountDetails,
   deductFromBalance,
   addToBalance,
+  fetchAccountsFromType,
 };

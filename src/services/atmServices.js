@@ -1,5 +1,5 @@
 const { makeid, formatDate } = require('../utils/utils');
-const { insertIntoATM, getCardDetails } = require('../models/atmModel');
+const { insertIntoATM, getCardDetails, fetchCardDetailsFromAccountNumber } = require('../models/atmModel');
 
 const issueAtmCard = async (accountNumber) => {
   const cardNumber = makeid(16, '0123456789');
@@ -16,6 +16,11 @@ const issueAtmCard = async (accountNumber) => {
   return result;
 };
 
+const getCardDetailsFromAccountNumber = async (accountNumber) => {
+  const result = await fetchCardDetailsFromAccountNumber(accountNumber);
+  return result;
+};
+
 const verifyCardDetails = async (accountNumber, cardNumber, cvv) => {
   const result = await getCardDetails(cardNumber);
   if (!result) {
@@ -28,5 +33,5 @@ const verifyCardDetails = async (accountNumber, cardNumber, cvv) => {
 };
 
 module.exports = {
-  issueAtmCard, verifyCardDetails,
+  issueAtmCard, verifyCardDetails, getCardDetailsFromAccountNumber,
 };

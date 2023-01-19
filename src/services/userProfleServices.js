@@ -22,9 +22,8 @@ const validateUser = async (id, password) => {
     if (isMatch) {
       return user;
     }
-  } else {
-    throw new Error();
   }
+  return false;
 };
 
 const registerUser = async ({

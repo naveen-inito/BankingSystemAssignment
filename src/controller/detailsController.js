@@ -1,4 +1,3 @@
-const { preferences } = require('joi');
 const { getAllAccountDetails, getUserPassbook } = require('../services/accountServices');
 
 const getAccountDetails = async (req, res) => {

@@ -4,7 +4,7 @@ const createMapper = () => {
 
   map[0] = 1;
   for (let currentCharPosition = 1; currentCharPosition < 26; currentCharPosition += 1) {
-    map[currentCharPosition] = 2 * map[currentCharPosition - 1] + 1;
+    map[currentCharPosition] = 2 * map[currentCharPosition - 1] + currentCharPosition;
   }
   return map;
 };
@@ -19,12 +19,6 @@ const formatDate = (date) => {
   if (day.length < 2) { day = `0${day}`; }
 
   return [year, month, day].join('-');
-};
-
-const subtract6Months = async (date) => {
-  const dateCopy = new Date(date);
-  dateCopy.setMonth(dateCopy.getMonth() - 6);
-  return dateCopy;
 };
 
 const getNumberOfDays = async (firstDate, secondDate) => {
@@ -100,9 +94,9 @@ module.exports = {
   calculateAge,
   formatDate,
   getLastDayOfMonthYear,
-  subtract6Months,
   getNumberOfDays,
   generateAccountNo,
   generateTransactionNumber,
   makeid,
+  createMapper,
 };

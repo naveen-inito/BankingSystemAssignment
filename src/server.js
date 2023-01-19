@@ -37,7 +37,7 @@ const jobForDeductingMoney = require("./cron/jobForDeductingMoney");
 const jobForCalculatingInterestOnSavingAccount = require("./cron/jobForCalculatingInterestOnSavingAccount");
 const jobForCalculatingInterestOnLoanAccount = require("./cron/jobForCalculatingInterestOnLoanAccount");
 
-// app.listen(PORT, () => {
-//   console.log(`server started on port ${PORT}`);
-// });
-module.exports = app;
+app.listen(PORT, () => {
+  console.log(`server started on port ${PORT}`);
+});
+// module.exports = app;

@@ -9,7 +9,7 @@ const insertIntoTransaction = async (transactionNumber, transactionType, account
   return result;
 };
 
-const fetchAllTransactionOfAccount = async (accountNumber, page, size) => {
+const fetchAllTransactionOfAccount = async (accountNumber, page = 1, size = 50) => {
   const result = await pool.query(
     `SELECT * from transaction
           where "accountNo" = $1
