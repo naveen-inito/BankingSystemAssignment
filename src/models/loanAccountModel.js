@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 const { pool } = require('../db/connection');
+const { LOAN_STATUS, ACCOUNT_TYPES, TRANSACTION_TYPES } = require('../utils/constants');
 
 const insertIntoLoanAccounts = async (accountNumber, loanType, loanInterest, amount, duration, status) => {
   const result = await pool.query(
@@ -15,7 +16,8 @@ const fetchActiveLoanAccounts = async () => {
           FROM accounts AS T1, loan_account AS T2
           WHERE T1."accountNumber" = T2."accountNumber"
           AND T1."accountType" = 'LOAN'
-          AND T2.status = 'active'`,
+          AND T2.status = $1`,
+    [LOAN_STATUS.ACTIVE],
   );
   return result;
 };
@@ -26,11 +28,12 @@ const fetchActiveLoanAccountsFromAccountNumber = async (accountNumber) => {
           FROM accounts AS T1, loan_account AS T2
           WHERE T1."accountNumber" = T2."accountNumber"
           AND T1."accountNumber" = $1
-          AND T1."accountType" = 'LOAN'
-          AND T2.status = 'active'`,
-    [accountNumber],
+          AND T1."accountType" = $2
+          AND T2.status = $3
+          LIMIT 1`,
+    [accountNumber, ACCOUNT_TYPES.LOAN, LOAN_STATUS.ACTIVE],
   );
-  return result;
+  return result.rows[0];
 };
 
 const loanAccountStatus = async (accountNumber, status) => {
@@ -48,9 +51,9 @@ const getLastInterestAddedDates = async (accountNumber) => {
     `select *
     FROM transaction
     WHERE "accountNo" = $1
-    AND "transactionType" = 'LOAN_INTEREST_ADDED'
-    ORDER BY "dateOfTransaction" DESC`,
-    [accountNumber],
+    AND "transactionType" = $2
+    ORDER BY "dateOfTransaction" DESC LIMIT 1`,
+    [accountNumber, TRANSACTION_TYPES.LOAN_INTEREST_ADDED],
   );
   return result;
 };
@@ -61,10 +64,10 @@ const getLoanAccountDetails = async (userId) => {
               FROM accounts AS T1, loan_account AS T2
               WHERE T1."userId" = $1
               AND T1."accountNumber" = T2."accountNumber"
-              `,
+              LIMIT 1`,
     [userId],
   );
-  return result;
+  return result.rows[0];
 };
 
 const deductAmountFromLoanAccount = async (accountNumber, amount) => {

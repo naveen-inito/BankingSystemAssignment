@@ -14,6 +14,7 @@ const { getCardDetailsFromAccountNumber } = require('../../services/atmServices.
 const { getUserAccountDetailsOfParticularType } = require('../../services/transactionServices.js');
 const { signUpUser, signInUser } = require('../../services/userProfleServices.js');
 const { getUserId } = require('../../utils/utils.js');
+const { pool } = require('../../db/connection.js');
 
 describe('Testing transaction api', () => {
   let token1;
@@ -26,14 +27,14 @@ describe('Testing transaction api', () => {
   let usertwoCardDetails;
   let request;
   let result;
+  let client;
   beforeAll(async () => {
-    request = supertest(app);
-    const { pool } = require('../../db/connection.js');
-    await pool.query('DELETE FROM transaction');
-    await pool.query('DELETE FROM loan_account');
-    await pool.query('DELETE FROM atm_card');
-    await pool.query('DELETE FROM accounts');
-    await pool.query('DELETE FROM users');
+    client = await pool.connect();
+    await client.query('DELETE FROM transaction');
+    await client.query('DELETE FROM loan_account');
+    await client.query('DELETE FROM atm_card');
+    await client.query('DELETE FROM accounts');
+    await client.query('DELETE FROM users');
     await signUpUser({
       username: 'userone',
       name: 'user new',
@@ -60,15 +61,18 @@ describe('Testing transaction api', () => {
     await createBankAccount({ id: getUserId('userone'), accountType: 'SAVINGS', amount: 50000 });
     await createBankAccount({ id: getUserId('usertwo'), accountType: 'CURRENT', amount: 100000 });
     await createBankAccount({ id: getUserId('usertwo'), accountType: 'SAVINGS', amount: 50000 });
-    result = await getUserAccountDetailsOfParticularType(getUserId('userone'), 'SAVINGS');
-    useroneSavingsAccountDetails = result.rows[0];
+    useroneSavingsAccountDetails = await getUserAccountDetailsOfParticularType(getUserId('userone'), 'SAVINGS');
     useroneCardDetails = await getCardDetailsFromAccountNumber(BigInt(useroneSavingsAccountDetails.accountNumber));
+  });
+  afterAll(async () => {
+    (await client).release();
   });
 
   it('Test to deposit money in user\'s account', async () => {
+    request = supertest(app);
     const response = await request.put('/api/account').send({
       amount: 5000,
-      accountType: 'CURRENT',
+      account_type: 'CURRENT',
     }).set('Authorization', `Bearer ${token1}`);
     expect(response.status).toBe(200);
     expect(response.body.message).toBe('Money added');
@@ -76,9 +80,10 @@ describe('Testing transaction api', () => {
   });
 
   it('Test to transfer money from userone to usertwo account', async () => {
+    request = supertest(app);
     const response = await request.put('/api/account').send({
       amount: -5000,
-      receiverUsername: 'usertwo',
+      receiver_username: 'usertwo',
     }).set('Authorization', `Bearer ${token1}`);
     expect(response.status).toBe(200);
     expect(response.body.message).toBe('Money transferred');
@@ -86,32 +91,36 @@ describe('Testing transaction api', () => {
   });
 
   it('Test to withdraw money from atm', async () => {
+    request = supertest(app);
     const response = await request.put('/api/account').send({
       amount: -5000,
-      cardNumber: useroneCardDetails.cardNumber,
+      card_number: useroneCardDetails.cardNumber,
       cvv: useroneCardDetails.cvv,
     }).set('Authorization', `Bearer ${token1}`);
     expect(response.status).toBe(200);
-    expect(response.body.message).toBe('Money withdrawn from bank using ATM');
+    expect(response.body.message).toBe('Money withdrawn from ATM');
   });
 
   it('Test to withdraw money from bank', async () => {
+    request = supertest(app);
     const response = await request.put('/api/account').send({
       amount: -5000,
-      accountType: 'CURRENT',
+      account_type: 'CURRENT',
     }).set('Authorization', `Bearer ${token1}`);
     expect(response.status).toBe(200);
-    expect(response.body.message).toBe('Money withdrawn from bank');
+    expect(response.body.message).toBe('Money withdrawn from Bank');
   });
 
   it('Test to get account details', async () => {
+    request = supertest(app);
     const response = await request.get('/api/account').send().set('Authorization', `Bearer ${token1}`);
     expect(response.status).toBe(200);
   });
 
   it('Test to get passbook of user', async () => {
+    request = supertest(app);
     const response = await request.get('/api/passbook').send({
-      accountType: 'SAVINGS',
+      account_type: 'SAVINGS',
     }).set('Authorization', `Bearer ${token1}`);
     expect(response.status).toBe(200);
   });

@@ -104,24 +104,21 @@ describe('Account services testing', () => {
   });
 
   it('test for calculating interest on loan account (cron)', async () => {
-    const loanAccountResponse = await fetchActiveLoanAccountsFromAccountNumber(loanAccountNumber1);
-    const loanAccount = loanAccountResponse.rows[0];
+    const loanAccount = await fetchActiveLoanAccountsFromAccountNumber(loanAccountNumber1);
     const response = await addInterestOnLoanAccount(loanAccount);
     expect(response.status).toBe(false);
     expect(response.message).toBe('Loan is created on this date only');
   });
 
   it('test for calculating interest on savings account (cron)', async () => {
-    const savingsAccountResponse = await fetchAccountDetailsFromIdAndType(userId1, 'SAVINGS');
-    const savingsAccount = savingsAccountResponse.rows[0];
+    const savingsAccount = await fetchAccountDetailsFromIdAndType(userId1, 'SAVINGS');
     const response = await jobForCalculatingInterestOnSavingAccount(savingsAccount);
     expect(response.status).toBe(false);
     expect(response.message).toBe('Penalty not imposed');
   });
 
   it('test for deducting penalty on current account (cron)', async () => {
-    const currentAccountResponse = await fetchAccountDetailsFromIdAndType(userId1, 'CURRENT');
-    const currentAccount = currentAccountResponse.rows[0];
+    const currentAccount = await fetchAccountDetailsFromIdAndType(userId1, 'CURRENT');
     const response = await calculateNrvAndDeductPenalty(currentAccount);
     expect(response.message1).toBe('Penalty imposed, since has less than 3 transactions');
     expect(response.message2).toBe('Penalty not imposed, since NRV is maintained');

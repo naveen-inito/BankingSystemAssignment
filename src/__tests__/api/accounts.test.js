@@ -8,35 +8,41 @@
 const supertest = require('supertest');
 const app = require('../../server.js');
 
+const { pool } = require('../../db/connection.js');
+
 describe('Testing Savings account creation', () => {
   let token;
   let request;
-  let pool;
+  let client;
   beforeAll(async () => {
-    request = supertest(app);
-    pool = require('../../db/connection.js').pool;
-    await pool.query('DELETE FROM transaction');
-    await pool.query('DELETE FROM loan_account');
-    await pool.query('DELETE FROM atm_card');
-    await pool.query('DELETE FROM accounts');
-    await pool.query('DELETE FROM users');
+    client = await pool.connect();
+    await client.query('DELETE FROM transaction');
+    await client.query('DELETE FROM loan_account');
+    await client.query('DELETE FROM atm_card');
+    await client.query('DELETE FROM accounts');
+    await client.query('DELETE FROM users');
   });
   afterAll(async () => {
-    await pool.query('DELETE FROM transaction');
-    await pool.query('DELETE FROM loan_account');
-    await pool.query('DELETE FROM atm_card');
-    await pool.query('DELETE FROM accounts');
-    await pool.query('DELETE FROM users');
-    pool.end();
+    (await client).release();
+    // app.close();
   });
 
+//   it('User should be created', async () => {
+//     request = supertest(app);
+//     const response = await request.get('/api/test').send();
+//     console.log(response.body)
+//     expect(response.body.success).toBe(true);
+//     expect(1).toBe(1);
+//   });
+
   it('User should be created', async () => {
+    request = supertest(app);
     const response = await request.post('/api/signup').send({
       username: 'usereighteenth',
       name: 'user new',
       email: 'usereighteenth@test.com',
       password: 'usereighteenth',
-      phoneNo: '+912222233333',
+      phone_no: '+912222233333',
       dob: '01-01-1993',
       address: 'dummy address number 1',
     });
@@ -45,6 +51,7 @@ describe('Testing Savings account creation', () => {
   });
 
   it('User should be logged in', async () => {
+    request = supertest(app);
     const response = await request.post('/api/signin').send({
       username: 'usereighteenth',
       password: 'usereighteenth',
@@ -55,9 +62,10 @@ describe('Testing Savings account creation', () => {
   });
 
   it('User\'s savings account should not be created (account type is invalid)', async () => {
+    request = supertest(app);
     const response = await request.post('/api/account').send({
       amount: '100000',
-      accountType: 'CRAVINGS',
+      account_type: 'CRAVINGS',
     }).set('Authorization', `Bearer ${token}`);
     expect(response.status).toBe(200);
     expect(response.body.status).toBe(false);
@@ -65,9 +73,10 @@ describe('Testing Savings account creation', () => {
   });
 
   it('User\'s savings account should not be created (amount is lesser)', async () => {
+    request = supertest(app);
     const response = await request.post('/api/account').send({
       amount: '5000',
-      accountType: 'SAVINGS',
+      account_type: 'SAVINGS',
     }).set('Authorization', `Bearer ${token}`);
     expect(response.status).toBe(200);
     expect(response.body.status).toBe(false);
@@ -75,9 +84,10 @@ describe('Testing Savings account creation', () => {
   });
 
   it('User\'s savings account should be created', async () => {
+    request = supertest(app);
     const response = await request.post('/api/account').send({
       amount: '100000',
-      accountType: 'SAVINGS',
+      account_type: 'SAVINGS',
     }).set('Authorization', `Bearer ${token}`);
     expect(response.status).toBe(200);
     expect(response.body.status).toBe(true);
@@ -85,9 +95,10 @@ describe('Testing Savings account creation', () => {
   });
 
   it('User\'s savings account should not be created (account already exists)', async () => {
+    request = supertest(app);
     const response = await request.post('/api/account').send({
       amount: '100000',
-      accountType: 'SAVINGS',
+      account_type: 'SAVINGS',
     }).set('Authorization', `Bearer ${token}`);
     expect(response.status).toBe(200);
     expect(response.body.status).toBe(false);
@@ -98,32 +109,34 @@ describe('Testing Savings account creation', () => {
 describe('Testing Current account creation', () => {
   let token;
   let request;
-  let pool;
+  //   let client = await pool.connect();
+  let client;
   beforeAll(async () => {
-    request = supertest(app);
-    pool = require('../../db/connection.js').pool;
-    await pool.query('DELETE FROM transaction');
-    await pool.query('DELETE FROM loan_account');
-    await pool.query('DELETE FROM atm_card');
-    await pool.query('DELETE FROM accounts');
-    await pool.query('DELETE FROM users');
+    client = await pool.connect();
+    await client.query('DELETE FROM transaction');
+    await client.query('DELETE FROM loan_account');
+    await client.query('DELETE FROM atm_card');
+    await client.query('DELETE FROM accounts');
+    await client.query('DELETE FROM users');
   });
   afterAll(async () => {
-    await pool.query('DELETE FROM transaction');
-    await pool.query('DELETE FROM loan_account');
-    await pool.query('DELETE FROM atm_card');
-    await pool.query('DELETE FROM accounts');
-    await pool.query('DELETE FROM users');
-    pool.end();
+    (await client).release();
+    // await pool.query('DELETE FROM transaction');
+    // await pool.query('DELETE FROM loan_account');
+    // await pool.query('DELETE FROM atm_card');
+    // await pool.query('DELETE FROM accounts');
+    // await pool.query('DELETE FROM users');
+    // pool.end();
   });
 
   it('User should be created', async () => {
+    request = supertest(app);
     const response = await request.post('/api/signup').send({
       username: 'usereighteenth',
       name: 'user new',
       email: 'usereighteenth@test.com',
       password: 'usereighteenth',
-      phoneNo: '+912222233333',
+      phone_no: '+912222233333',
       dob: '01-01-1993',
       address: 'dummy address number 1',
     });
@@ -132,6 +145,7 @@ describe('Testing Current account creation', () => {
   });
 
   it('User should be logged in', async () => {
+    request = supertest(app);
     const response = await request.post('/api/signin').send({
       username: 'usereighteenth',
       password: 'usereighteenth',
@@ -142,9 +156,10 @@ describe('Testing Current account creation', () => {
   });
 
   it('User\'s current account should not be created (account type is invalid)', async () => {
+    request = supertest(app);
     const response = await request.post('/api/account').send({
       amount: '100000',
-      accountType: 'CRAVINGS',
+      account_type: 'CRAVINGS',
     }).set('Authorization', `Bearer ${token}`);
     expect(response.status).toBe(200);
     expect(response.body.status).toBe(false);
@@ -152,9 +167,10 @@ describe('Testing Current account creation', () => {
   });
 
   it('User\'s current account should not be created (amount is lesser)', async () => {
+    request = supertest(app);
     const response = await request.post('/api/account').send({
       amount: '99999',
-      accountType: 'CURRENT',
+      account_type: 'CURRENT',
     }).set('Authorization', `Bearer ${token}`);
     expect(response.status).toBe(200);
     expect(response.body.status).toBe(false);
@@ -162,9 +178,10 @@ describe('Testing Current account creation', () => {
   });
 
   it('User\'s current account should be created', async () => {
+    request = supertest(app);
     const response = await request.post('/api/account').send({
       amount: '100000',
-      accountType: 'CURRENT',
+      account_type: 'CURRENT',
     }).set('Authorization', `Bearer ${token}`);
     expect(response.status).toBe(200);
     expect(response.body.status).toBe(true);
@@ -172,9 +189,10 @@ describe('Testing Current account creation', () => {
   });
 
   it('User\'s current account should not be created (account already exists)', async () => {
+    request = supertest(app);
     const response = await request.post('/api/account').send({
       amount: '100000',
-      accountType: 'CURRENT',
+      account_type: 'CURRENT',
     }).set('Authorization', `Bearer ${token}`);
     expect(response.status).toBe(200);
     expect(response.body.status).toBe(false);
@@ -185,32 +203,34 @@ describe('Testing Current account creation', () => {
 describe('Testing Loan account creation', () => {
   let token;
   let request;
-  let pool;
+  //   let client = await pool.connect();
+  let client;
   beforeAll(async () => {
-    request = supertest(app);
-    pool = require('../../db/connection.js').pool;
-    await pool.query('DELETE FROM transaction');
-    await pool.query('DELETE FROM loan_account');
-    await pool.query('DELETE FROM atm_card');
-    await pool.query('DELETE FROM accounts');
-    await pool.query('DELETE FROM users');
+    client = await pool.connect();
+    await client.query('DELETE FROM transaction');
+    await client.query('DELETE FROM loan_account');
+    await client.query('DELETE FROM atm_card');
+    await client.query('DELETE FROM accounts');
+    await client.query('DELETE FROM users');
   });
   afterAll(async () => {
-    await pool.query('DELETE FROM transaction');
-    await pool.query('DELETE FROM loan_account');
-    await pool.query('DELETE FROM atm_card');
-    await pool.query('DELETE FROM accounts');
-    await pool.query('DELETE FROM users');
-    pool.end();
+    (await client).release();
+    // await pool.query('DELETE FROM transaction');
+    // await pool.query('DELETE FROM loan_account');
+    // await pool.query('DELETE FROM atm_card');
+    // await pool.query('DELETE FROM accounts');
+    // await pool.query('DELETE FROM users');
+    // pool.end();
   });
 
   it('User should be created', async () => {
+    request = supertest(app);
     const response = await request.post('/api/signup').send({
       username: 'usereighteenth',
       name: 'user new',
       email: 'usereighteenth@test.com',
       password: 'usereighteenth',
-      phoneNo: '+912222233333',
+      phone_no: '+912222233333',
       dob: '01-01-1993',
       address: 'dummy address number 1',
     });
@@ -219,6 +239,7 @@ describe('Testing Loan account creation', () => {
   });
 
   it('User should be logged in', async () => {
+    request = supertest(app);
     const response = await request.post('/api/signin').send({
       username: 'usereighteenth',
       password: 'usereighteenth',
@@ -229,10 +250,11 @@ describe('Testing Loan account creation', () => {
   });
 
   it('User\'s loan account should not be created (No other account exists)', async () => {
+    request = supertest(app);
     const response = await request.post('/api/account').send({
       amount: '1000000',
-      accountType: 'LOAN',
-      loanType: 'CAR',
+      account_type: 'LOAN',
+      loan_type: 'CAR',
       duration: '4',
     }).set('Authorization', `Bearer ${token}`);
     expect(response.status).toBe(200);
@@ -241,9 +263,10 @@ describe('Testing Loan account creation', () => {
   });
 
   it('User\'s current account should be created', async () => {
+    request = supertest(app);
     const response = await request.post('/api/account').send({
       amount: '100000',
-      accountType: 'CURRENT',
+      account_type: 'CURRENT',
     }).set('Authorization', `Bearer ${token}`);
     expect(response.status).toBe(200);
     expect(response.body.status).toBe(true);
@@ -251,10 +274,11 @@ describe('Testing Loan account creation', () => {
   });
 
   it('User\'s loan account should not be created (total deposits error)', async () => {
+    request = supertest(app);
     const response = await request.post('/api/account').send({
       amount: '500000',
-      accountType: 'LOAN',
-      loanType: 'CAR',
+      account_type: 'LOAN',
+      loan_type: 'CAR',
       duration: '4',
     }).set('Authorization', `Bearer ${token}`);
     expect(response.status).toBe(200);
@@ -263,9 +287,10 @@ describe('Testing Loan account creation', () => {
   });
 
   it('User\'s savings account should be created', async () => {
+    request = supertest(app);
     const response = await request.post('/api/account').send({
       amount: '1500000',
-      accountType: 'SAVINGS',
+      account_type: 'SAVINGS',
     }).set('Authorization', `Bearer ${token}`);
     expect(response.status).toBe(200);
     expect(response.body.status).toBe(true);
@@ -273,13 +298,13 @@ describe('Testing Loan account creation', () => {
   });
 
   it('User\'s loan account should be created', async () => {
+    request = supertest(app);
     const response = await request.post('/api/account').send({
       amount: '600000',
-      accountType: 'LOAN',
-      loanType: 'CAR',
+      account_type: 'LOAN',
+      loan_type: 'CAR',
       duration: '4',
     }).set('Authorization', `Bearer ${token}`);
-    console.log(response.body)
     expect(response.status).toBe(200);
     expect(response.body.status).toBe(true);
     expect(response.body.message).toBe('Account Created');

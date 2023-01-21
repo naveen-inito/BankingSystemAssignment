@@ -1,10 +1,11 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable max-len */
 const {
-  insertIntoAccounts, fetchUserAccounts, fetchAccountDetailsFromIdAndType, fetchAccountsFromType,
+  insertIntoAccounts, fetchUserAccounts, fetchAccountDetailsFromIdAndType, savingsAccountEntry, loanAccountEntry,
 } = require('../models/accountsModel');
-const { insertIntoLoanAccounts, loanAccountStatus, getLastInterestAddedDates } = require('../models/loanAccountModel');
+const { loanAccountStatus, getLastInterestAddedDates } = require('../models/loanAccountModel');
 const { fetchAllTransactionOfAccount } = require('../models/transactionModel');
+const { ACCOUNT_TYPES, INTEREST_RATES, TOTAL_DEPOSIT_RATE_FOR_LOAN, MINIMUM_LOAN_AMOUNT, MINIMUM_CURRENT_OPENING_AMOUNT, MINIMUM_SAVINGS_OPENING_AMOUNT, MINIMUM_AGE_FOR_CURRENT, MINIMUM_AGE_FOR_LOAN, LOAN_STATUS, TYPES_OF_ACCOUNT, TRANSACTION_TYPES } = require('../utils/constants');
 const {
   generateAccountNo, calculateAge, formatDate, getLastDayOfMonthYear,
 } = require('../utils/utils');
@@ -16,59 +17,45 @@ const { getUserDetails } = require('./userProfleServices');
 
 const getUserAccount = async (userId, accountType) => {
   const result = await fetchAccountDetailsFromIdAndType(userId, accountType);
-  const accountRow = result.rows[0];
+  const accountRow = result;
   return accountRow;
 };
 
 const validateAgeForAcccount = (age, accountType) => {
-  if (accountType === 'CURRENT' && age < 18) {
+  if (accountType === ACCOUNT_TYPES.CURRENT && age < MINIMUM_AGE_FOR_CURRENT) {
     return { status: false, message: 'Minimum age error' };
-  } if (accountType === 'LOAN' && age < 25) {
+  } if (accountType === ACCOUNT_TYPES.LOAN && age < MINIMUM_AGE_FOR_LOAN) {
     return { status: false, message: 'Minimum age error' };
   }
-  return { status: true, message: 'Age is fine to create account' };
+  return { status: true };
 };
 
 const getLoanInterest = (loanType) => {
-  let loanInterest = 0;
-  let status = true;
-  if (loanType === 'HOME') {
-    loanInterest = 7;
-  } else if (loanType === 'CAR') {
-    loanInterest = 8;
-  } else if (loanType === 'PERSONAL') {
-    loanInterest = 12;
-  } else if (loanType === 'BUSINESS') {
-    loanInterest = 15;
-  } else {
-    status = false;
+  if (INTEREST_RATES.has(loanType)) {
+    return { status: true, loanInterest: INTEREST_RATES.get(loanType) };
   }
-  return { status, loanInterest };
+  return { status: false, loanInterest: 0 };
 };
 
 const createSavingsAccount = async (id, amount, accountNumber, formattedDate) => {
-  if (amount < 10000) {
+  if (amount < MINIMUM_SAVINGS_OPENING_AMOUNT) {
     return { status: false, message: 'Minimum amount error' };
   }
 
-  const accountEntryResponse = await insertIntoAccounts(accountNumber, 'SAVINGS', id, formattedDate, amount);
-  if (accountEntryResponse.rowCount === 0) {
-    return { status: false, message: 'Unable to open account' };
-  }
-
-  const atmResult = await issueAtmCard(accountNumber);
-  if (atmResult.rowCount === 0) {
-    return { status: false, message: 'Unable to open account' };
-  }
-  return { status: true, message: 'Account Created' };
+  const { cardNumber, expiryDate, cvv } = await issueAtmCard(accountNumber);
+  const accountType = ACCOUNT_TYPES.SAVINGS;
+  const savingsAccountResponse = await savingsAccountEntry({
+    accountNumber, accountType, id, formattedDate, amount, cardNumber, expiryDate, cvv,
+  });
+  return savingsAccountResponse;
 };
 
 const createCurrentAccount = async (id, amount, accountNumber, formattedDate) => {
-  if (amount < 100000) {
+  if (amount < MINIMUM_CURRENT_OPENING_AMOUNT) {
     return { status: false, message: 'Minimum amount error' };
   }
 
-  const accountEntryResponse = insertIntoAccounts(accountNumber, 'CURRENT', id, formattedDate, amount);
+  const accountEntryResponse = insertIntoAccounts(accountNumber, ACCOUNT_TYPES.CURRENT, id, formattedDate, amount);
   if (accountEntryResponse.rowCount === 0) {
     return { status: false, message: 'Unable to open account' };
   }
@@ -77,19 +64,19 @@ const createCurrentAccount = async (id, amount, accountNumber, formattedDate) =>
 
 const createLoanAccount = async (id, amount, accountNumber, formattedDate, loanType, duration) => {
   // Checking for other accounts
-  const userRows = await fetchUserAccounts(id);
+  const accountRows = await fetchUserAccounts(id);
 
   // Checking all the conditions for creating the loan account
-  if (!userRows[0]) {
+  if (!accountRows[0]) {
     return { status: false, message: 'No other bank account exists' };
   }
-  if (amount < 500000) {
+  if (amount < MINIMUM_LOAN_AMOUNT) {
     return { status: false, message: 'Minimum amount error' };
   }
 
   // Can only give 40% of total deposit as loan
-  const totalSum = getTotalDepositsOfUser(userRows);
-  if (((totalSum * 40) / 100) < amount) {
+  const totalSum = getTotalDepositsOfUser(accountRows);
+  if (((totalSum * TOTAL_DEPOSIT_RATE_FOR_LOAN)) < amount) {
     return { status: false, message: 'Loan amount should be lesser than 40% of total deposits' };
   }
 
@@ -99,13 +86,12 @@ const createLoanAccount = async (id, amount, accountNumber, formattedDate, loanT
   }
   const { loanInterest } = loanInterestResponse;
 
-  const accountEntryResponse = await insertIntoAccounts(accountNumber, 'LOAN', id, formattedDate, amount);
-  const loanAccountEntryResponse = await insertIntoLoanAccounts(accountNumber, loanType, loanInterest, amount, duration, 'active');
-
-  if (accountEntryResponse.rowCount === 0 || (await loanAccountEntryResponse).rowCount === 0) {
-    return { status: false, message: 'Loan cannot be provided' };
-  }
-  return { status: true, message: 'Account Created' };
+  const accountType = ACCOUNT_TYPES.LOAN;
+  const loanStatus = LOAN_STATUS.ACTIVE;
+  const loanAccountEntryResponse = await loanAccountEntry({
+    accountNumber, accountType, id, formattedDate, amount, loanInterest, loanType, duration, loanStatus,
+  });
+  return loanAccountEntryResponse;
 };
 
 const createBankAccount = async (req) => {
@@ -122,7 +108,7 @@ const createBankAccount = async (req) => {
   const accountNumber = BigInt(generateAccountNo(15));
   const currentAge = calculateAge(dob);
 
-  if (accountType !== 'SAVINGS' && accountType !== 'CURRENT' && accountType !== 'LOAN') {
+  if (!TYPES_OF_ACCOUNT.includes(accountType)) {
     return { status: false, message: 'Invalid data entered' };
   }
 
@@ -133,21 +119,20 @@ const createBankAccount = async (req) => {
   const formattedDate = formatDate(currentDate);
 
   // Now, creating the user account
-  if (accountType === 'SAVINGS') {
+  if (accountType === ACCOUNT_TYPES.SAVINGS) {
     // console.log("creating savings account, ", accountNumber, ", ", typeof(accountNumber))
     const createSavingsAccountResponse = await createSavingsAccount(id, amount, accountNumber, formattedDate);
     return createSavingsAccountResponse;
   }
-  if (accountType === 'CURRENT') {
+  if (accountType === ACCOUNT_TYPES.CURRENT) {
     const createCurrentAccountResponse = await createCurrentAccount(id, amount, accountNumber, formattedDate);
     return createCurrentAccountResponse;
   }
-  if (accountType === 'LOAN') {
+  if (accountType === ACCOUNT_TYPES.LOAN) {
     const { loanType, duration } = req;
     const createLoanAccountResponse = await createLoanAccount(id, amount, accountNumber, formattedDate, loanType, duration);
     return createLoanAccountResponse;
   }
-  return { status: true, message: 'Account Created' };
 };
 
 const getAllAccountDetails = async (id) => {
@@ -155,24 +140,20 @@ const getAllAccountDetails = async (id) => {
   const currentAccountDetails = await getUserAccountDetailsOfParticularType(id, 'CURRENT');
   const loanAccountDetails = await getUserAccountDetailsOfLoanAccount(id);
 
-  const savingAccount = savingAccountDetails.rows[0];
-  const currentAccount = currentAccountDetails.rows[0];
-  const loanAccount = loanAccountDetails.rows[0];
-
   const responseToSend = {
-    Savings: savingAccount,
-    Current: currentAccount,
-    Loan: loanAccount,
+    Savings: savingAccountDetails,
+    Current: currentAccountDetails,
+    Loan: loanAccountDetails,
   };
   return responseToSend;
 };
 
 const getUserPassbook = async (id, accountType, page, size) => {
   const getAccountDetailsResponse = await fetchAccountDetailsFromIdAndType(id, accountType);
-  if (!getAccountDetailsResponse.rows) {
+  if (!getAccountDetailsResponse) {
     return { status: false, message: 'Account does not exist' };
   }
-  const { accountNumber } = getAccountDetailsResponse.rows[0];
+  const { accountNumber } = getAccountDetailsResponse;
   const result = await fetchAllTransactionOfAccount(accountNumber, page, size);
   return result.rows;
 };
@@ -199,14 +180,14 @@ const jobForCalculatingInterestOnSavingAccount = async (currentAccount) => {
   const averageAmountOfWholeMonth = totalNRVofWholeMonth / numberOfDays;
 
   const interestToBeAdded = parseInt(((averageAmountOfWholeMonth / 100) * 6) / 12, 10);
-  await addMoney(currentAccount.accountNumber, interestToBeAdded, 'SAVINGS');
-  await addTransaction(0, 'INTEREST_EARNED', null, currentAccount.accountNumber, interestToBeAdded, formattedDate, null, currentAccount.balance);
+  await addMoney(currentAccount.accountNumber, interestToBeAdded, ACCOUNT_TYPES.SAVINGS);
+  await addTransaction(0, TRANSACTION_TYPES.INTEREST_EARNED, null, currentAccount.accountNumber, interestToBeAdded, formattedDate, null, currentAccount.balance);
   const newBalance = currentAccount.balance + interestToBeAdded;
 
   // If NRV falls below 100000, then we should charge Rs. 1000 to the user...
   if (totalNRVofWholeMonth < 100000) {
-    await subtractMoney(currentAccount.accountNumber, 1000, 'SAVINGS');
-    await addTransaction(0, 'PENALTY_FOR_NRV', currentAccount.accountNumber, null, interestToBeAdded, formattedDate, newBalance, null);
+    await subtractMoney(currentAccount.accountNumber, 1000, ACCOUNT_TYPES.SAVINGS);
+    await addTransaction(0, TRANSACTION_TYPES.PENALTY_FOR_NRV, currentAccount.accountNumber, null, interestToBeAdded, formattedDate, newBalance, null);
     return { status: true, message: 'Penalty imposed' };
   }
   return { status: false, message: 'Penalty not imposed' };
@@ -229,7 +210,7 @@ const addInterestOnLoanAccount = async (loanAccount) => {
 
   if (((currentDay > creationDateOfLoanAccount && currentMonth === creationMonthOfLoanAccount) || (currentMonth > creationMonthOfLoanAccount)) && currentYear - creationYearOfLoanAccount >= loanAccount.duration) {
     // then loan is defaulted
-    const setLoanAccountStatusResponse = await loanAccountStatus(loanAccount.accountNumber, 'default');
+    const setLoanAccountStatusResponse = await loanAccountStatus(loanAccount.accountNumber, LOAN_STATUS.DEFAULT);
     return { status: false, message: 'Loan is defaulted' };
   }
 
@@ -278,8 +259,8 @@ const addInterestOnLoanAccount = async (loanAccount) => {
   }
   const average = total / count;
   const interestToAdd = parseInt(((average / 100) * interestToBeAdded) / 2, 10);
-  await addMoney(loanAccount.accountNumber, interestToAdd, 'LOAN');
-  await addTransaction(0, 'LOAN_INTEREST_ADDED', null, loanAccount.accountNumber, interestToAdd, formattedDate, null, loanAccount.balance);
+  await addMoney(loanAccount.accountNumber, interestToAdd, ACCOUNT_TYPES.LOAN);
+  await addTransaction(0, TRANSACTION_TYPES.LOAN_INTEREST_ADDED, null, loanAccount.accountNumber, interestToAdd, formattedDate, null, loanAccount.balance);
   return { status: true, message: 'Interest added' };
 };
 
@@ -320,8 +301,8 @@ const calculateNrvAndDeductPenalty = async (currentAccount) => {
 
   // If NRV falls below 100000, then we should charge Rs. 1000 to the user...
   if (totalNRVofWholeMonth < 500000) {
-    await subtractMoney(currentAccount.accountNumber, 5000, 'CURRENT');
-    await addTransaction(0, 'PENALTY_FOR_NRV', currentAccount.accountNumber, null, 5000, formattedDate, newBalance, null);
+    await subtractMoney(currentAccount.accountNumber, 5000, ACCOUNT_TYPES.CURRENT);
+    await addTransaction(0, TRANSACTION_TYPES.PENALTY_FOR_NRV, currentAccount.accountNumber, null, 5000, formattedDate, newBalance, null);
     return { message1, message2: 'Penalty imposed, because of NRV' };
   }
   return { message1, message2: 'Penalty not imposed, since NRV is maintained' };

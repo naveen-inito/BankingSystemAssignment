@@ -31,13 +31,17 @@ app.get("/api/passbook", authMiddleware, getPassbook);
 
 // transaction api
 app.put("/api/account", authMiddleware, handleAccountUpdates);
+app.get("/api/test", async (req, res) => {
+  console.log("hello");
+  res.send({ success: true });
+});
 
 // Cron jobs
 const jobForDeductingMoney = require("./cron/jobForDeductingMoney");
 const jobForCalculatingInterestOnSavingAccount = require("./cron/jobForCalculatingInterestOnSavingAccount");
 const jobForCalculatingInterestOnLoanAccount = require("./cron/jobForCalculatingInterestOnLoanAccount");
 
-app.listen(PORT, () => {
-  console.log(`server started on port ${PORT}`);
-});
-// module.exports = app;
+// app.listen(PORT, () => {
+//   console.log(`server started on port ${PORT}`);
+// });
+module.exports = app;

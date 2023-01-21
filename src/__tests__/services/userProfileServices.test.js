@@ -6,9 +6,10 @@
 /* eslint-disable no-undef */
 
 const {
-  registerUser, signUpUser, generateAuthToken, signInUser, validateUser, getUserDetails,
+  registerUser, signUpUser, generateAuthToken, signInUser, validateUser, getUserDetails
 } = require('../../services/userProfleServices.js');
 const { userExists } = require('../../services/userServices.js');
+
 const { getUserId } = require('../../utils/utils.js');
 // Link to your server file
 // const request = supertest(app);
@@ -104,12 +105,12 @@ describe('User Profile services testing', () => {
   });
 
   it('should return false (invalid id passed)', async () => {
-    const response = await userExists({ id: 32145 });
+    const response = await userExists(32145);
     expect(response).toBe(false);
   });
 
   it('should return true', async () => {
-    const response = await userExists({ id: userId1 });
+    const response = await userExists(userId1);
     expect(response).toBe(true);
   });
 });

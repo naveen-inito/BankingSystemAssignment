@@ -90,13 +90,13 @@ describe('Transaction services testing', () => {
       id: userId1, cardNumber: card1, cvv: cvv1, amount: -2000,
     });
     expect(response.status).toBe(true);
-    expect(response.message).toBe('Money withdrawn from bank using ATM');
+    expect(response.message).toBe('Money withdrawn from ATM');
   });
 
   it('Should withdraw money from bank', async () => {
     const response = await handleTransactions({ id: userId1, accountType: 'SAVINGS', amount: -2000 });
     expect(response.status).toBe(true);
-    expect(response.message).toBe('Money withdrawn from bank');
+    expect(response.message).toBe('Money withdrawn from Bank');
   });
 
   it('Should not withdraw money from bank', async () => {
@@ -128,17 +128,17 @@ describe('Transaction services testing', () => {
   });
 
   it('Should give count equal to 1', async () => {
-    const response = await getCurrentMonthAtmWithdrawCount(accNo1, '2023-01-20');
+    const response = await getCurrentMonthAtmWithdrawCount(accNo1);
     expect(response).toBe(1);
   });
 
   it('Should give count equal to 1', async () => {
-    const response = await getCurrentMonthAtmWithdrawCount(accNo1, '2023-01-20');
+    const response = await getCurrentMonthAtmWithdrawCount(accNo1);
     expect(response).toBe(1);
   });
 
   it('Should give amount equal to 4000', async () => {
-    const response = await getCurrentDayWithdrawalAmount(accNo1, '2023-01-20');
+    const response = await getCurrentDayWithdrawalAmount(accNo1);
     expect(response.rows[0].sum).toBe('-4000');
   });
 

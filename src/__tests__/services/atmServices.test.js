@@ -2,7 +2,7 @@
 /* eslint-disable global-require */
 /* eslint-disable no-undef */
 const {
-  createBankAccount, getAllAccountDetails
+  createBankAccount, getAllAccountDetails,
 } = require('../../services/accountServices.js');
 const { getCardDetailsFromAccountNumber, verifyCardDetails } = require('../../services/atmServices.js');
 const { signUpUser } = require('../../services/userProfleServices.js');

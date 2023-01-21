@@ -11,7 +11,7 @@ const insertIntoATM = async (cardNumber, accountNumber, expiryDate, cvv) => {
 const getCardDetails = async (cardNumber) => {
   const result = await pool.query(
     `SELECT * FROM atm_card
-        WHERE "cardNumber" = $1`,
+        WHERE "cardNumber" = $1 LIMIT 1`,
     [cardNumber],
   );
   return result.rows[0];
@@ -20,7 +20,7 @@ const getCardDetails = async (cardNumber) => {
 const fetchCardDetailsFromAccountNumber = async (accountNumber) => {
   const result = await pool.query(
     `SELECT * FROM atm_card
-        WHERE "accountNumber" = $1`,
+        WHERE "accountNumber" = $1 LIMIT 1`,
     [accountNumber],
   );
   return result.rows[0];

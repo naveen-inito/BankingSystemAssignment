@@ -12,8 +12,12 @@ const issueAtmCard = async (accountNumber) => {
   const expiryDateResp = new Date(year + 6, month, day);
   const expiryDate = formatDate(expiryDateResp);
 
-  const result = await insertIntoATM(cardNumber, accountNumber, expiryDate, cvv);
-  return result;
+  return {
+    cardNumber, expiryDate, cvv,
+  };
+
+  // const result = await insertIntoATM(cardNumber, accountNumber, expiryDate, cvv);
+  // return result;
 };
 
 const getCardDetailsFromAccountNumber = async (accountNumber) => {

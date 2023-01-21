@@ -1,9 +1,8 @@
-const { getCountById } = require('../models/userModel');
+const { fetchUserDetails } = require("../models/userModel");
 
-const userExists = async ({ id }) => {
-  const result = await getCountById(id);
-  const { count } = result.rows[0];
-  if (count > 0) {
+const userExists = async (id) => {
+  const result = await fetchUserDetails(id);
+  if (result) {
     return true;
   }
   return false;

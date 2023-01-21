@@ -4,9 +4,16 @@ const {
 
 const signUp = async (req, res) => {
   try {
-    const signUpUserResp = await signUpUser(req.body);
+    const {
+      username, name, email, password, dob, address,
+    } = req.body;
+    const phoneNo = req.body.phone_no;
+    const signUpUserResp = await signUpUser({
+      username, name, email, password, phoneNo, dob, address,
+    });
     return res.send(signUpUserResp);
   } catch (error) {
+    console.log(error)
     return res.status(400).send({
       signup_error: 'Error while signing up..',
     });
@@ -15,7 +22,8 @@ const signUp = async (req, res) => {
 
 const signIn = async (req, res) => {
   try {
-    const signinUserResp = await signInUser(req.body);
+    const { username, password } = req.body;
+    const signinUserResp = await signInUser({ username, password });
     return res.send(signinUserResp);
   } catch (error) {
     return res.status(400).send({

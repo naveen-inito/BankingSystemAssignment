@@ -1,13 +1,8 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-await-in-loop */
-/* eslint-disable no-continue */
-/* eslint-disable max-len */
 const schedule = require('node-schedule');
 const { fetchActiveLoanAccounts } = require('../models/loanAccountModel');
 const { addInterestOnLoanAccount } = require('../services/accountServices');
 
-// Job for calculating interest on "LOAN" account...
-// This job should run "ONCE PER DAY"
+// Job for calculating interest on "LOAN" account... This job should run "ONCE PER DAY"
 // Interest for an account is calculated every 6 months
 // const jobString = '*/5 * * * * *';
 const jobString = '55 23 * * *';

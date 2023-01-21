@@ -64,6 +64,7 @@ const signUpUser = async (req) => {
   };
   const validateSignUpResponse = await validateSignUp(user);
   if (!validateSignUpResponse.success) { return validateSignUpResponse; }
+  // console.log(validateSignUpResponse)
 
   const registerUserResult = await registerUser({
     username, name, email, password, phoneNo, dob, address,

@@ -3,7 +3,7 @@ const { pool } = require('../db/connection');
 
 const fetchUserDetails = async (id) => {
   const result = await pool.query(
-    'select * from users where id = $1',
+    'select * from users where id = $1 LIMIT 1',
     [id],
   );
   return result.rows[0];
@@ -11,7 +11,7 @@ const fetchUserDetails = async (id) => {
 
 const fetchIdAndPasswordOfUser = async (id) => {
   const result = await pool.query(
-    'select id, password from users where id = $1',
+    'select id, password from users where id = $1 LIMIT 1',
     [id],
   );
   return result.rows[0];
@@ -25,11 +25,6 @@ const insertIntoUsers = async (userId, username, name, email, hashedPassword, ph
   return result;
 };
 
-const getCountById = async (id) => {
-  const result = await pool.query('select count(*) as count from users where id=$1', [id]);
-  return result;
-};
-
 module.exports = {
-  fetchUserDetails, fetchIdAndPasswordOfUser, insertIntoUsers, getCountById,
+  fetchUserDetails, fetchIdAndPasswordOfUser, insertIntoUsers,
 };
