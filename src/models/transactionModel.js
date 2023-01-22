@@ -2,7 +2,6 @@
 /* eslint-disable max-len */
 const { pool } = require('../db/connection');
 const { TRANSACTION_TYPES, LOAN_STATUS } = require('../utils/constants');
-const { generateTransactionNumber } = require('../utils/utils');
 
 const insertIntoTransaction = async (transactionNumber, transactionType, accountNumber, amount, amountBeforeTransaction) => {
   const result = await pool.query(

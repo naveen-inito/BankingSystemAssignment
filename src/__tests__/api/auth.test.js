@@ -7,7 +7,7 @@
 // import app from '../../server.js';
 
 const supertest = require('supertest');
-const app = require('../../server.js');
+const app = require('../../app.js');
 // Link to your server file
 // const request = supertest(app);
 const { pool } = require('../../db/connection.js');

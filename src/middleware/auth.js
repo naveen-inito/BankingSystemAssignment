@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
-const { pool } = require('../db/connection');
 const { fetchIdAndPasswordOfUser } = require('../models/userModel');
 
 dotenv.config();

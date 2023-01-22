@@ -1,4 +1,4 @@
-const { fetchUserDetails } = require("../models/userModel");
+const { fetchUserDetails } = require('../models/userModel');
 
 const userExists = async (id) => {
   const result = await fetchUserDetails(id);

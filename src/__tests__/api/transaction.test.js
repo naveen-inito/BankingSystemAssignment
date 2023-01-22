@@ -8,7 +8,7 @@
 // import supertest from 'supertest';
 // import app from '../../server.js';
 const supertest = require('supertest');
-const app = require('../../server.js');
+const app = require('../../app.js');
 const { createBankAccount } = require('../../services/accountServices.js');
 const { getCardDetailsFromAccountNumber } = require('../../services/atmServices.js');
 const { getUserAccountDetailsOfParticularType } = require('../../services/transactionServices.js');

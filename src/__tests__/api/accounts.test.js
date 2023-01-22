@@ -6,7 +6,7 @@
 // import supertest from 'supertest';
 // import app from '../../server.js';
 const supertest = require('supertest');
-const app = require('../../server.js');
+const app = require('../../app.js');
 
 const { pool } = require('../../db/connection.js');
 
