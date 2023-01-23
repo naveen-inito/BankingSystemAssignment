@@ -60,7 +60,7 @@ CREATE TABLE transaction (
     "accountNo" BIGINT NOT NULL,
     amount INT,
     "amountBeforeTransaction" INT NOT NULL,
-    "dateOfTransaction" timestamp NOT NULL,
+    "dateOfTransaction" timestamp DEFAULT CURRENT_DATE,
     FOREIGN KEY ("accountNo") REFERENCES accounts("accountNumber")
 );
 
