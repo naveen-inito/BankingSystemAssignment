@@ -1,3 +1,5 @@
+/* eslint-disable space-before-blocks */
+/* eslint-disable no-await-in-loop */
 /* eslint-disable global-require */
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/no-extraneous-dependencies */
@@ -9,6 +11,7 @@ const supertest = require('supertest');
 const app = require('../../app.js');
 
 const { pool } = require('../../db/connection.js');
+const { fetchActiveLoanAccounts } = require('../../models/loanAccountModel.js');
 
 describe('Testing Savings account creation', () => {
   let token;
@@ -140,7 +143,7 @@ describe('Testing Current account creation', () => {
       email: 'usereighteenth@test.com',
       password: 'usereighteenth',
       phone_no: '+912222233333',
-      dob: '01-01-1993',
+      dob: '01-01-2010',
       address: 'dummy address number 1',
     });
     expect(response.status).toBe(200);
@@ -156,6 +159,18 @@ describe('Testing Current account creation', () => {
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
     token = response.body.token;
+  });
+
+  it('User\'s current account should not be created (Minimum age error)', async () => {
+    request = supertest(app);
+    const response = await request.post('/api/account').send({
+      amount: '100000',
+      account_type: 'CURRENT',
+    }).set('Authorization', `Bearer ${token}`);
+    expect(response.status).toBe(200);
+    expect(response.body.status).toBe(false);
+    expect(response.body.message).toBe('Minimum age error');
+    await client.query('UPDATE users SET dob = \'01-01-1993\' WHERE username = \'usereighteenth\'');
   });
 
   it('User\'s current account should not be created (account type is invalid)', async () => {
@@ -218,12 +233,6 @@ describe('Testing Loan account creation', () => {
   });
   afterAll(async () => {
     (await client).release();
-    // await pool.query('DELETE FROM transaction');
-    // await pool.query('DELETE FROM loan_account');
-    // await pool.query('DELETE FROM atm_card');
-    // await pool.query('DELETE FROM accounts');
-    // await pool.query('DELETE FROM users');
-    // pool.end();
   });
 
   it('User should be created', async () => {
@@ -234,7 +243,7 @@ describe('Testing Loan account creation', () => {
       email: 'usereighteenth@test.com',
       password: 'usereighteenth',
       phone_no: '+912222233333',
-      dob: '01-01-1993',
+      dob: '01-01-2001',
       address: 'dummy address number 1',
     });
     expect(response.status).toBe(200);
@@ -250,6 +259,20 @@ describe('Testing Loan account creation', () => {
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
     token = response.body.token;
+  });
+
+  it('User\'s loan account should not be created (Minimum age error)', async () => {
+    request = supertest(app);
+    const response = await request.post('/api/account').send({
+      amount: '500000',
+      account_type: 'LOAN',
+      loan_type: 'CAR',
+      duration: '4',
+    }).set('Authorization', `Bearer ${token}`);
+    expect(response.status).toBe(200);
+    expect(response.body.status).toBe(false);
+    expect(response.body.message).toBe('Minimum age error');
+    await client.query('UPDATE users SET dob = \'01-01-1993\' WHERE username = \'usereighteenth\'');
   });
 
   it('User\'s loan account should not be created (No other account exists)', async () => {
@@ -300,6 +323,32 @@ describe('Testing Loan account creation', () => {
     expect(response.body.message).toBe('Account Created');
   });
 
+  it('User\'s loan account should not be created (loan_type is invalid)', async () => {
+    request = supertest(app);
+    const response = await request.post('/api/account').send({
+      amount: '600000',
+      account_type: 'LOAN',
+      loan_type: 'BANK',
+      duration: '4',
+    }).set('Authorization', `Bearer ${token}`);
+    expect(response.status).toBe(200);
+    expect(response.body.status).toBe(false);
+    expect(response.body.message).toBe('Invalid details entered');
+  });
+
+  it('User\'s loan account should not be created (loan amount is minimum)', async () => {
+    request = supertest(app);
+    const response = await request.post('/api/account').send({
+      amount: '10000',
+      account_type: 'LOAN',
+      loan_type: 'BANK',
+      duration: '4',
+    }).set('Authorization', `Bearer ${token}`);
+    expect(response.status).toBe(200);
+    expect(response.body.status).toBe(false);
+    expect(response.body.message).toBe('Minimum amount error');
+  });
+
   it('User\'s loan account should be created', async () => {
     request = supertest(app);
     const response = await request.post('/api/account').send({
@@ -311,5 +360,39 @@ describe('Testing Loan account creation', () => {
     expect(response.status).toBe(200);
     expect(response.body.status).toBe(true);
     expect(response.body.message).toBe('Account Created');
+  });
+
+  it('Test to repay loan', async () => {
+    request = supertest(app);
+    const response = await request.put('/api/account').send({
+      amount: '60000',
+      account_type: 'LOAN',
+    }).set('Authorization', `Bearer ${token}`);
+    expect(response.status).toBe(200);
+    expect(response.body.status).toBe(true);
+    expect(response.body.message).toBe('Loan amount paid successfully');
+  });
+
+  it('Test to repay loan (excedding the amount)', async () => {
+    request = supertest(app);
+    const response = await request.put('/api/account').send({
+      amount: '70000',
+      account_type: 'LOAN',
+    }).set('Authorization', `Bearer ${token}`);
+    expect(response.status).toBe(200);
+    expect(response.body.status).toBe(false);
+    expect(response.body.message).toBe('Loan repayment amount excedded');
+  });
+
+  it('fetching active loan account', async () => {
+    // changing the creation date of loan account to calculate the interest
+    for (let loanRepayCounter = 1; loanRepayCounter <= 9; loanRepayCounter += 1){
+      const response = await request.put('/api/account').send({
+        amount: '60000',
+        account_type: 'LOAN',
+      }).set('Authorization', `Bearer ${token}`);
+    }
+    const loanAccounts = await fetchActiveLoanAccounts();
+    expect(loanAccounts.rows.length).toBe(0);
   });
 });

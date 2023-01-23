@@ -17,12 +17,6 @@ const {
 } = require('./transactionServices');
 const { getUserDetails } = require('./userProfleServices');
 
-const getUserAccount = async (userId, accountType) => {
-  const result = await fetchAccountDetailsFromIdAndType(userId, accountType);
-  const accountRow = result;
-  return accountRow;
-};
-
 const validateAgeForAcccount = (age, accountType) => {
   if (accountType === ACCOUNT_TYPES.CURRENT && age < MINIMUM_AGE_FOR_CURRENT) {
     return { status: false, message: 'Minimum age error' };
@@ -102,7 +96,7 @@ const createBankAccount = async (req) => {
   const { dob } = userDetails;
 
   // Checking if the same accountType already exists for the current user
-  const accountResponse = await getUserAccount(id, accountType);
+  const accountResponse = await fetchAccountDetailsFromIdAndType(id, accountType);
   if (accountResponse) {
     return { status: false, message: 'Account already exists' };
   }
@@ -122,7 +116,6 @@ const createBankAccount = async (req) => {
 
   // Now, creating the user account
   if (accountType === ACCOUNT_TYPES.SAVINGS) {
-    // console.log("creating savings account, ", accountNumber, ", ", typeof(accountNumber))
     const createSavingsAccountResponse = await createSavingsAccount(id, amount, accountNumber, formattedDate);
     return createSavingsAccountResponse;
   }
@@ -179,8 +172,6 @@ const jobForCalculatingInterestOnSavingAccount = async (currentAccount) => {
   const averageAmountOfWholeMonth = totalNRVofWholeMonth / numberOfDays;
 
   const interestToBeAdded = parseInt(((averageAmountOfWholeMonth / 100) * SAVINGS_ACCOUNT_INTEREST_RATE) / MONTHS_IN_YEAR, 10);
-  // await addMoney(currentAccount.accountNumber, interestToBeAdded, ACCOUNT_TYPES.SAVINGS);
-  // await addTransaction(0, TRANSACTION_TYPES.INTEREST_EARNED, null, currentAccount.accountNumber, interestToBeAdded, formattedDate, null, currentAccount.balance);
   const receiverTransactionNumber = generateTransactionNumber();
   await addMoneyWithTransaction({
     accountNumber: currentAccount.accountNumber,
@@ -194,8 +185,6 @@ const jobForCalculatingInterestOnSavingAccount = async (currentAccount) => {
 
   // If NRV falls below 100000, then we should charge Rs. 1000 to the user...
   if (totalNRVofWholeMonth < SAVINGS_ACCOUNT_NRV) {
-    // await subtractMoney(currentAccount.accountNumber, SAVINGS_ACCOUNT_NRV_PENALTY, ACCOUNT_TYPES.SAVINGS);
-    // await addTransaction(0, TRANSACTION_TYPES.PENALTY_FOR_NRV, currentAccount.accountNumber, null, interestToBeAdded, formattedDate, newBalance, null);
     const senderTransactionNumber = generateTransactionNumber();
     await subtractMoneyWithTransaction({
       accountNumber: currentAccount.accountNumber,
@@ -223,7 +212,7 @@ const addInterestOnLoanAccount = async (loanAccount) => {
   const lastDateOfMonth = await getLastDayOfMonthYear(currentYear, currentMonth);
   const interestToBeAdded = loanAccount.interest;
 
-  if (((currentDay > creationDateOfLoanAccount && currentMonth === creationMonthOfLoanAccount) || (currentMonth > creationMonthOfLoanAccount)) && currentYear - creationYearOfLoanAccount >= loanAccount.duration) {
+  if ((((currentDay > creationDateOfLoanAccount && currentMonth === creationMonthOfLoanAccount) || (currentMonth > creationMonthOfLoanAccount)) && currentYear - creationYearOfLoanAccount >= loanAccount.duration) || (currentYear - creationYearOfLoanAccount > loanAccount.duration)) {
     // then loan is defaulted
     const setLoanAccountStatusResponse = await loanAccountStatus(loanAccount.accountNumber, LOAN_STATUS.DEFAULT);
     return { status: false, message: 'Loan is defaulted' };
@@ -274,8 +263,6 @@ const addInterestOnLoanAccount = async (loanAccount) => {
   }
   const average = total / count;
   const interestToAdd = parseInt(((average / 100) * interestToBeAdded) / 2, 10);
-  // await addMoney(loanAccount.accountNumber, interestToAdd, ACCOUNT_TYPES.LOAN);
-  // await addTransaction(0, TRANSACTION_TYPES.LOAN_INTEREST_ADDED, null, loanAccount.accountNumber, interestToAdd, formattedDate, null, loanAccount.balance);
   const receiverTransactionNumber = generateTransactionNumber();
   await addMoneyWithTransaction({
     accountNumber: loanAccount.accountNumber,
@@ -298,7 +285,7 @@ const calculateNrvAndDeductPenalty = async (currentAccount) => {
   const year = prevDate.getFullYear();
 
   const transactionCountResponse = await getTransactionCountForAccount(currentAccount.accountNumber, currentDate);
-  const transactionCountForUser = transactionCountResponse.rows[0].count;
+  const transactionCountForUser = transactionCountResponse;
 
   let message1 = 'Penalty not imposed, since has more than or equal to 3 transactions';
 
@@ -324,8 +311,6 @@ const calculateNrvAndDeductPenalty = async (currentAccount) => {
 
   // If NRV falls below 100000, then we should charge Rs. 1000 to the user...
   if (totalNRVofWholeMonth < CURRENT_ACCOUNT_NRV) {
-    // await subtractMoney(currentAccount.accountNumber, CURRENT_ACCOUNT_NRV_PENALTY, ACCOUNT_TYPES.CURRENT);
-    // await addTransaction(0, TRANSACTION_TYPES.PENALTY_FOR_NRV, currentAccount.accountNumber, null, CURRENT_ACCOUNT_NRV_PENALTY, formattedDate, newBalance, null);
     const senderTransactionNumber = generateTransactionNumber();
     await subtractMoneyWithTransaction({
       accountNumber: currentAccount.accountNumber,
@@ -344,7 +329,6 @@ module.exports = {
   getUserPassbook,
   getAllAccountDetails,
   createBankAccount,
-  getUserAccount,
   createSavingsAccount,
   createCurrentAccount,
   createLoanAccount,

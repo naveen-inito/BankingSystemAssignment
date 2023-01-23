@@ -1,13 +1,5 @@
 const { pool } = require('../db/connection');
 
-const insertIntoATM = async (cardNumber, accountNumber, expiryDate, cvv) => {
-  const result = await pool.query(
-    'INSERT INTO atm_card ("cardNumber", "accountNumber", "expiryDate", "cvv") values($1,$2,$3,$4)',
-    [cardNumber, accountNumber, expiryDate, cvv],
-  );
-  return result;
-};
-
 const getCardDetails = async (cardNumber) => {
   const result = await pool.query(
     `SELECT * FROM atm_card
@@ -27,7 +19,6 @@ const fetchCardDetailsFromAccountNumber = async (accountNumber) => {
 };
 
 module.exports = {
-  insertIntoATM,
   getCardDetails,
   fetchCardDetailsFromAccountNumber,
 };

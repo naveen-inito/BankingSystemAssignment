@@ -6,9 +6,7 @@ const getAccountDetails = async (req, res) => {
     const getAllAccountDetailsResponse = await getAllAccountDetails(id);
     return res.send(getAllAccountDetailsResponse);
   } catch (error) {
-    return res.status(400).send({
-      message: 'Error while fetching account details',
-    });
+    return res.status(400).send({ message: 'Error while fetching account details' });
   }
 };
 
@@ -21,14 +19,13 @@ const getPassbook = async (req, res) => {
       req.body.size = 50;
     }
     const {
-      id, accountType, page, size,
+      id, page, size,
     } = req.body;
+    const accountType = req.body.account_type;
     const userPassbookResponse = await getUserPassbook(id, accountType, page, size);
     return res.send(userPassbookResponse);
   } catch (error) {
-    return res.status(400).send({
-      message: 'Error while fetching account details',
-    });
+    return res.status(400).send({ message: 'Error while fetching account details' });
   }
 };
 

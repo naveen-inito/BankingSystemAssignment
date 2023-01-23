@@ -73,7 +73,6 @@ const loanAccountEntry = async (
     return { status: true, message: 'Account Created' };
   } catch (e) {
     await client.query('ROLLBACK');
-    // throw e;
     return { status: false, message: 'Unable to open account' };
   } finally {
     client.release();
@@ -93,23 +92,18 @@ const savingsAccountEntry = async (
       'INSERT INTO accounts ("accountNumber", "accountType", "userId", "createdAt", "balance") values($1,$2,$3,$4,$5)',
       [accountNumber, accountType, id, formattedDate, amount],
     );
-    if (result1.rowCount === 0) {
-      throw new Error();
-    }
+    if (result1.rowCount === 0) { throw new Error(); }
 
     const result2 = await client.query(
       'INSERT INTO atm_card ("cardNumber", "accountNumber", "expiryDate", "cvv") values($1,$2,$3,$4)',
       [cardNumber, accountNumber, expiryDate, cvv],
     );
-    if (result2.rowCount === 0) {
-      throw new Error();
-    }
+    if (result2.rowCount === 0) { throw new Error(); }
 
     await client.query('COMMIT');
     return { status: true, message: 'Account Created' };
   } catch (e) {
     await client.query('ROLLBACK');
-    // throw e;
     return { status: false, message: 'Unable to open account' };
   } finally {
     client.release();

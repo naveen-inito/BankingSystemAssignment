@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 /* eslint-disable max-len */
 /* eslint-disable import/extensions */
 /* eslint-disable global-require */
@@ -136,6 +137,17 @@ describe('Transaction services testing', () => {
   it('Should give amount equal to 4000', async () => {
     const response = await getCurrentDayWithdrawalAmount(accNo1);
     expect(response.rows[0].sum).toBe('-4000');
+  });
+
+  it('Should withdraw money from atm more than 5 times', async () => {
+    let response;
+    for (let withdrawCounter = 1; withdrawCounter <= 5; withdrawCounter += 1) {
+      response = await handleTransactions({
+        id: userId1, cardNumber: card1, cvv: cvv1, amount: -2000,
+      });
+    }
+    expect(response.status).toBe(true);
+    expect(response.message).toBe('Money withdrawn from ATM');
   });
 
   it('Should not subtract money from balance', async () => {

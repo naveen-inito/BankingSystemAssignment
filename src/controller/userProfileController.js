@@ -13,10 +13,7 @@ const signUp = async (req, res) => {
     });
     return res.send(signUpUserResp);
   } catch (error) {
-    console.log(error);
-    return res.status(400).send({
-      signup_error: 'Error while signing up..',
-    });
+    return res.status(400).send({ signup_error: 'Error while signing up..' });
   }
 };
 
@@ -26,9 +23,7 @@ const signIn = async (req, res) => {
     const signinUserResp = await signInUser({ username, password });
     return res.send(signinUserResp);
   } catch (error) {
-    return res.status(400).send({
-      signin_error: 'Error while logging in..',
-    });
+    return res.status(400).send({ signin_error: 'Error while logging in..' });
   }
 };
 

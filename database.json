@@ -1,9 +1,0 @@
-{
-    "dev":{
-        "driver": "pg",
-        "user": "postgres",
-        "password": "naveen",
-        "host": "localhost",
-        "database": "banksystem_d1"
-    }
-}

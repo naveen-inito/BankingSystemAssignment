@@ -2,7 +2,7 @@
 /* eslint-disable import/extensions */
 /* eslint-disable global-require */
 /* eslint-disable no-undef */
-const { fetchAccountDetailsFromIdAndType } = require('../../models/accountsModel.js');
+const { fetchAccountDetailsFromIdAndType, fetchAccountsFromType } = require('../../models/accountsModel.js');
 const { fetchActiveLoanAccountsFromAccountNumber } = require('../../models/loanAccountModel.js');
 const {
   createBankAccount, getAllAccountDetails, validateAgeForAcccount, getLoanInterest, addInterestOnLoanAccount, jobForCalculatingInterestOnSavingAccount, calculateNrvAndDeductPenalty,
@@ -36,6 +36,9 @@ describe('Account services testing', () => {
   let savingsAccountNumber1;
   let currentAccountNumber1;
   let loanAccountNumber1;
+  let savingsAccountNumber2;
+  let currentAccountNumber2;
+  let loanAccountNumber2;
 
   beforeAll(async () => {
     await pool.query('DELETE FROM transaction');
@@ -59,8 +62,24 @@ describe('Account services testing', () => {
     expect(response.message).toBe('Account Created');
   });
 
+  it('user\'s savings account should be created', async () => {
+    const response = await createBankAccount({ id: userId2, accountType: 'SAVINGS', amount: '1000000' });
+    expect(response.status).toBe(true);
+    expect(response.message).toBe('Account Created');
+  });
+
+  it('Fetch user\'s savings account', async () => {
+    const response = await fetchAccountsFromType('SAVINGS');
+    expect(response.rows.length).toBe(2);
+  });
+
   it('user\'s current account should be created', async () => {
     const response = await createBankAccount({ id: userId1, accountType: 'CURRENT', amount: '500000' });
+    expect(response.status).toBe(true);
+    expect(response.message).toBe('Account Created');
+  });
+  it('user\'s current account should be created', async () => {
+    const response = await createBankAccount({ id: userId2, accountType: 'CURRENT', amount: '500000' });
     expect(response.status).toBe(true);
     expect(response.message).toBe('Account Created');
   });
@@ -68,6 +87,14 @@ describe('Account services testing', () => {
   it('user\'s loan account should be created', async () => {
     const response = await createBankAccount({
       id: userId1, accountType: 'LOAN', amount: '520000', loanType: 'CAR', duration: 5,
+    });
+    expect(response.status).toBe(true);
+    expect(response.message).toBe('Account Created');
+  });
+
+  it('user\'s loan account should be created', async () => {
+    const response = await createBankAccount({
+      id: userId2, accountType: 'LOAN', amount: '520000', loanType: 'CAR', duration: 5,
     });
     expect(response.status).toBe(true);
     expect(response.message).toBe('Account Created');
@@ -81,6 +108,16 @@ describe('Account services testing', () => {
     savingsAccountNumber1 = response.Savings.accountNumber;
     currentAccountNumber1 = response.Current.accountNumber;
     loanAccountNumber1 = response.Loan.accountNumber;
+  });
+
+  it('user\'s details should be provided', async () => {
+    const response = await getAllAccountDetails(userId2);
+    expect(response.Savings).toBeDefined();
+    expect(response.Current).toBeDefined();
+    expect(response.Loan).toBeDefined();
+    savingsAccountNumber2 = response.Savings.accountNumber;
+    currentAccountNumber2 = response.Current.accountNumber;
+    loanAccountNumber2 = response.Loan.accountNumber;
   });
 
   it('validating user\'s age for account creation', async () => {
@@ -108,6 +145,38 @@ describe('Account services testing', () => {
     const response = await addInterestOnLoanAccount(loanAccount);
     expect(response.status).toBe(false);
     expect(response.message).toBe('Loan is created on this date only');
+  });
+
+  it('test for calculating interest on loan account (mock date) (cron)', async () => {
+    // changing the creation date of loan account to calculate the interest
+    await pool.query(`UPDATE accounts SET "createdAt" = '2010-01-23' WHERE "accountNumber" = ${loanAccountNumber1}`);
+    const RealDate = Date.now;
+    Date.now = jest.fn(() => new Date(Date.UTC(2010, 6, 23)).valueOf());
+    const loanAccount = await fetchActiveLoanAccountsFromAccountNumber(loanAccountNumber1);
+    console.log(loanAccount);
+    const response = await addInterestOnLoanAccount(loanAccount);
+    expect(response.status).toBe(true);
+    expect(response.message).toBe('Interest added');
+    Date.now = RealDate;
+  });
+
+  it('test for calculating interest on loan account (cron) (loan is defaulted)', async () => {
+    // changing the creation date of loan account to calculate the interest
+    await pool.query(`UPDATE accounts SET "createdAt" = '2004-07-23' WHERE "accountNumber" = ${loanAccountNumber2}`);
+    const loanAccount = await fetchActiveLoanAccountsFromAccountNumber(loanAccountNumber2);
+    console.log(loanAccount);
+    const response = await addInterestOnLoanAccount(loanAccount);
+    expect(response.status).toBe(false);
+    expect(response.message).toBe('Loan is defaulted');
+  });
+
+  it('test for calculating interest on savings account (cron)', async () => {
+    await pool.query(`UPDATE accounts SET balance = 2000 WHERE "userId" = ${userId1} AND "accountType" = 'SAVINGS'`);
+    const savingsAccount = await fetchAccountDetailsFromIdAndType(userId1, 'SAVINGS');
+    const response = await jobForCalculatingInterestOnSavingAccount(savingsAccount);
+    expect(response.status).toBe(true);
+    expect(response.message).toBe('Penalty imposed');
+    await pool.query(`UPDATE accounts SET balance = 10000 WHERE "userId" = ${userId1} AND "accountType" = 'SAVINGS'`);
   });
 
   it('test for calculating interest on savings account (cron)', async () => {

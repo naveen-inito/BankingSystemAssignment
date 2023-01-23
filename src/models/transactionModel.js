@@ -29,10 +29,11 @@ const fetchParticularMonthTransactionCountOfAccount = async (accountNumber, mont
     `SELECT COUNT(*)
                 FROM transaction
                 WHERE "accountNo" = $1
-                AND EXTRACT(MONTH FROM "dateOfTransaction") = $2 AND EXTRACT(YEAR FROM "dateOfTransaction") = $3`,
+                AND EXTRACT(MONTH FROM "dateOfTransaction") = $2 AND EXTRACT(YEAR FROM "dateOfTransaction") = $3
+                GROUP BY "transactionNumber"`,
     [accountNumber, month, year],
   );
-  return result;
+  return result.rowCount;
 };
 
 const fetchParticularDayWithdrawAmount = async (accountNumber, day, month, year) => {
@@ -52,7 +53,8 @@ const fetchParticularMonthAtmWithdrawCount = async (accountNumber, month, year) 
     `SELECT COUNT(*) FROM transaction WHERE
               "accountNo" = $1 AND "transactionType" = $2 AND
               EXTRACT(MONTH FROM "dateOfTransaction") = $3 AND
-              EXTRACT(YEAR FROM "dateOfTransaction") = $4`,
+              EXTRACT(YEAR FROM "dateOfTransaction") = $4
+              GROUP BY "transactionNumber"`,
     [accountNumber, TRANSACTION_TYPES.WITHDRAW_FROM_ATM, month, year],
   );
   return result.rowCount;
@@ -114,9 +116,7 @@ const transferMoney = async ({
       [transactionCharge, senderAccountNumber, accountType],
     );
 
-    if (deductBalanceQuery.rowCount === 0 || addBalanceQuery.rowCount === 0 || deductTransactionChargeQuery.rowCount === 0) {
-      throw new Error();
-    }
+    if (deductBalanceQuery.rowCount === 0 || addBalanceQuery.rowCount === 0 || deductTransactionChargeQuery.rowCount === 0) { throw new Error(); }
 
     if (senderAccountNumber != null) {
     // Now, we need to add transaction for the SENDER
@@ -138,7 +138,6 @@ const transferMoney = async ({
     return { status: true, message: 'Money transferred' };
   } catch (e) {
     await client.query('ROLLBACK');
-    // throw e;
     return { status: false, message: 'Money could not be transferred' };
   } finally {
     client.release();
@@ -189,7 +188,6 @@ const withdrawFromAtm = async ({
     return { status: true, message: 'Money withdrawn from ATM' };
   } catch (e) {
     await client.query('ROLLBACK');
-    // throw e;
     return { status: false, message: 'Money could not be withdrawn from ATM' };
   } finally {
     client.release();
@@ -206,6 +204,7 @@ const withdrawFromBank = async ({
 }) => {
   let client;
   try {
+    amount = parseInt(amount, 10);
     client = await pool.connect();
     await client.query('BEGIN');
 
@@ -227,7 +226,6 @@ const withdrawFromBank = async ({
     return { status: true, message: 'Money withdrawn from Bank' };
   } catch (e) {
     await client.query('ROLLBACK');
-    // throw e;
     return { status: false, message: 'Money could not be withdrawn from Bank' };
   } finally {
     client.release();
@@ -246,6 +244,7 @@ const loanRepayment = async ({
   try {
     client = await pool.connect();
     await client.query('BEGIN');
+    amount = parseInt(amount, 10);
 
     const deductBalanceQuery = await client.query(
       `UPDATE accounts
@@ -275,7 +274,6 @@ const loanRepayment = async ({
     return { status: true, message: 'Loan amount paid successfully' };
   } catch (e) {
     await client.query('ROLLBACK');
-    // throw e;
     return { status: false, message: 'Loan amount couldn\'t be payed' };
   } finally {
     client.release();
@@ -323,8 +321,6 @@ const depositMoney = async ({
     return { status: true, message: 'Money added' };
   } catch (e) {
     await client.query('ROLLBACK');
-    // throw e;
-    console.log(e);
     return { status: false, message: 'Money could not be added' };
   } finally {
     client.release();
@@ -362,8 +358,6 @@ const addMoneyWithTransaction = async ({
     return { status: true, message: 'added money' };
   } catch (e) {
     await client.query('ROLLBACK');
-    // throw e;
-    console.log(e);
     return { status: false, message: 'Money could not be added' };
   } finally {
     client.release();
@@ -401,8 +395,6 @@ const subtractMoneyWithTransaction = async ({
     return { status: true, message: 'added money' };
   } catch (e) {
     await client.query('ROLLBACK');
-    // throw e;
-    console.log(e);
     return { status: false, message: 'Money could not be added' };
   } finally {
     client.release();
