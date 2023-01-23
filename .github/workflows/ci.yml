@@ -27,7 +27,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: naveen
-          POSTGRES_DB: banksystem
+          POSTGRES_DB: banksystem_dummy
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -43,6 +43,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: create env file
+        run: |
+          touch .env
+          echo SECRET="AOCNASDMWFOF8789697y79y78t87y7gyf97tc9trc8bt656" >> .env
+          echo DATABASE_NAME="banksystem" >> .env
+          echo TEST_DATABASE_NAME="banksystem_dummy" >> .env
+
       - name: Set up Node.js 14.x
         uses: actions/setup-node@v1
         with:
@@ -54,13 +61,20 @@ jobs:
       - name: Install nodejs migrate
         run: npm install node-pg-migrate pg
 
-      - name: migrate database
-        run: node migrate.js
+      # - name: migrate database
+      #   run: node migrate.js
+      #   env:
+      #     DBURL: "postgres://postgres:postgres@localhost:5432/banksystem"
+
+      - name: Query database
+        run: psql -U postgres -d banksystem_dummy -h localhost -p 5432 -f creation.sql
         env:
-          DBURL: "postgres://postgres:postgres@localhost:5432/postgres"
+          # postgress password is required; alternatively, you can run:
+          # `PGPASSWORD=postgres_password psql ...`
+          PGPASSWORD: naveen
 
       - name: Run the mock tests function
         run: node test
         env:
-          DBURL: postgres://postgres:postgres@localhost:5432/postgres
+          DBURL: postgres://postgres:postgres@localhost:5432/banksystem
 
