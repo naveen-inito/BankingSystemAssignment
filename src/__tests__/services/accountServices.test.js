@@ -154,9 +154,6 @@ describe('Account services testing', () => {
     const RealDate = Date.now;
     // Date.now = jest.fn(() => new Date(Date.UTC(2010, 6, 23)).valueOf());
     Date.now = jest.fn(() => Date.parse('2010-07-23'));
-    const currentDate = Date(Date.now()).toString();
-    const formattedDate = formatDate(currentDate);
-    console.log(currentDate,", ",formattedDate)
 
     const response1 = await handleTransactions({ id: userId1, accountType: 'LOAN', amount: 22000 });
     expect(response1.status).toBe(true);
@@ -174,7 +171,6 @@ describe('Account services testing', () => {
     // changing the creation date of loan account to calculate the interest
     await pool.query(`UPDATE accounts SET "createdAt" = '2004-07-23' WHERE "accountNumber" = ${loanAccountNumber2}`);
     const loanAccount = await fetchActiveLoanAccountsFromAccountNumber(loanAccountNumber2);
-    console.log(loanAccount);
     const response = await addInterestOnLoanAccount(loanAccount);
     expect(response.status).toBe(false);
     expect(response.message).toBe('Loan is defaulted');
