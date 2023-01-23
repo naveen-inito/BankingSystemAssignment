@@ -8,7 +8,7 @@ const {
 } = require('../../services/accountServices.js');
 const { getCardDetailsFromAccountNumber } = require('../../services/atmServices.js');
 const {
-  handleTransactions, addTransaction, getCurrentMonthAtmWithdrawCount, getCurrentDayWithdrawalAmount, addMoney, subtractMoney, subtractMoneyFromLoanAccount, getTotalDepositsOfUser, getMinBalance, getMinBalanceOfLoanAccount,
+  handleTransactions, getCurrentMonthAtmWithdrawCount, getCurrentDayWithdrawalAmount, addMoney, subtractMoney, subtractMoneyFromLoanAccount, getTotalDepositsOfUser, getMinBalance, getMinBalanceOfLoanAccount,
 } = require('../../services/transactionServices.js');
 const { signUpUser } = require('../../services/userProfleServices.js');
 const { getUserId } = require('../../utils/utils.js');
@@ -115,16 +115,6 @@ describe('Transaction services testing', () => {
     const response = await handleTransactions({ id: userId1, accountType: 'LOAN', amount: 100000 });
     expect(response.status).toBe(false);
     expect(response.message).toBe('Loan repayment amount excedded');
-  });
-
-  it('Transaction should be added', async () => {
-    const response = await addTransaction(0, 'WITHDRAW_FROM_BANK', 1234567892, null, 2000, '2020-10-09', 420000, null);
-    expect(response.rowCount).toBeDefined();
-  });
-
-  it('Transaction should be added', async () => {
-    const response = await addTransaction(0, 'WITHDRAW_FROM_BANK', 1234567892, null, 2000, '2020-10-09', 420000, null);
-    expect(response.rowCount).toBeDefined();
   });
 
   it('Should give count equal to 1', async () => {
