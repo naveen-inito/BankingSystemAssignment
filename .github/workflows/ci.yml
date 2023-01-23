@@ -74,7 +74,7 @@ jobs:
           PGPASSWORD: naveen
 
       - name: Run the mock tests function
-        run: node test
+        run: npm test
         env:
           DBURL: postgres://postgres:postgres@localhost:5432/banksystem
 
