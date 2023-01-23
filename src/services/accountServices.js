@@ -3,15 +3,17 @@
 const {
   insertIntoAccounts, fetchUserAccounts, fetchAccountDetailsFromIdAndType, savingsAccountEntry, loanAccountEntry,
 } = require('../models/accountsModel');
-const { loanAccountStatus, getLastInterestAddedDates } = require('../models/loanAccountModel');
-const { fetchAllTransactionOfAccount } = require('../models/transactionModel');
-const { ACCOUNT_TYPES, INTEREST_RATES, TOTAL_DEPOSIT_RATE_FOR_LOAN, MINIMUM_LOAN_AMOUNT, MINIMUM_CURRENT_OPENING_AMOUNT, MINIMUM_SAVINGS_OPENING_AMOUNT, MINIMUM_AGE_FOR_CURRENT, MINIMUM_AGE_FOR_LOAN, LOAN_STATUS, TYPES_OF_ACCOUNT, TRANSACTION_TYPES } = require('../utils/constants');
+const { loanAccountStatus, getLastInterestAddedDates, getLoanAccountDetails } = require('../models/loanAccountModel');
+const { fetchAllTransactionOfAccount, addMoneyWithTransaction, subtractMoneyWithTransaction } = require('../models/transactionModel');
 const {
-  generateAccountNo, calculateAge, formatDate, getLastDayOfMonthYear,
+  ACCOUNT_TYPES, INTEREST_RATES, TOTAL_DEPOSIT_RATE_FOR_LOAN, MINIMUM_LOAN_AMOUNT, MINIMUM_CURRENT_OPENING_AMOUNT, MINIMUM_SAVINGS_OPENING_AMOUNT, MINIMUM_AGE_FOR_CURRENT, MINIMUM_AGE_FOR_LOAN, LOAN_STATUS, TYPES_OF_ACCOUNT, TRANSACTION_TYPES, CURRENT_ACCOUNT_NRV, CURRENT_ACCOUNT_NRV_PENALTY, SAVINGS_ACCOUNT_NRV, SAVINGS_ACCOUNT_NRV_PENALTY, SAVINGS_ACCOUNT_INTEREST_RATE, MONTHS_IN_YEAR,
+} = require('../utils/constants');
+const {
+  generateAccountNo, calculateAge, formatDate, getLastDayOfMonthYear, generateTransactionNumber,
 } = require('../utils/utils');
 const { issueAtmCard } = require('./atmServices');
 const {
-  getUserAccountDetailsOfParticularType, getUserAccountDetailsOfLoanAccount, getTotalDepositsOfUser, getMinBalance, addMoney, addTransaction, subtractMoney, getMinBalanceOfLoanAccount, getTransactionCountForAccount,
+  getUserAccountDetailsOfParticularType, getTotalDepositsOfUser, getMinBalance, subtractMoney, getMinBalanceOfLoanAccount, getTransactionCountForAccount,
 } = require('./transactionServices');
 const { getUserDetails } = require('./userProfleServices');
 
@@ -136,9 +138,9 @@ const createBankAccount = async (req) => {
 };
 
 const getAllAccountDetails = async (id) => {
-  const savingAccountDetails = await getUserAccountDetailsOfParticularType(id, 'SAVINGS');
-  const currentAccountDetails = await getUserAccountDetailsOfParticularType(id, 'CURRENT');
-  const loanAccountDetails = await getUserAccountDetailsOfLoanAccount(id);
+  const savingAccountDetails = await getUserAccountDetailsOfParticularType(id, ACCOUNT_TYPES.SAVINGS);
+  const currentAccountDetails = await getUserAccountDetailsOfParticularType(id, ACCOUNT_TYPES.CURRENT);
+  const loanAccountDetails = await getLoanAccountDetails(id);
 
   const responseToSend = {
     Savings: savingAccountDetails,
@@ -159,9 +161,6 @@ const getUserPassbook = async (id, accountType, page, size) => {
 };
 
 const jobForCalculatingInterestOnSavingAccount = async (currentAccount) => {
-  const currentDate = Date(Date.now()).toString();
-  const formattedDate = formatDate(currentDate);
-
   const d = new Date(Date.now());
   const prevDate = new Date(d);
   prevDate.setDate(prevDate.getDate() - 1);
@@ -179,15 +178,33 @@ const jobForCalculatingInterestOnSavingAccount = async (currentAccount) => {
   }
   const averageAmountOfWholeMonth = totalNRVofWholeMonth / numberOfDays;
 
-  const interestToBeAdded = parseInt(((averageAmountOfWholeMonth / 100) * 6) / 12, 10);
-  await addMoney(currentAccount.accountNumber, interestToBeAdded, ACCOUNT_TYPES.SAVINGS);
-  await addTransaction(0, TRANSACTION_TYPES.INTEREST_EARNED, null, currentAccount.accountNumber, interestToBeAdded, formattedDate, null, currentAccount.balance);
+  const interestToBeAdded = parseInt(((averageAmountOfWholeMonth / 100) * SAVINGS_ACCOUNT_INTEREST_RATE) / MONTHS_IN_YEAR, 10);
+  // await addMoney(currentAccount.accountNumber, interestToBeAdded, ACCOUNT_TYPES.SAVINGS);
+  // await addTransaction(0, TRANSACTION_TYPES.INTEREST_EARNED, null, currentAccount.accountNumber, interestToBeAdded, formattedDate, null, currentAccount.balance);
+  const receiverTransactionNumber = generateTransactionNumber();
+  await addMoneyWithTransaction({
+    accountNumber: currentAccount.accountNumber,
+    amount: interestToBeAdded,
+    accountType: ACCOUNT_TYPES.SAVINGS,
+    transactionType: TRANSACTION_TYPES.INTEREST_EARNED,
+    receiverTransactionNumber,
+    amountBeforeTransaction: currentAccount.balance,
+  });
   const newBalance = currentAccount.balance + interestToBeAdded;
 
   // If NRV falls below 100000, then we should charge Rs. 1000 to the user...
-  if (totalNRVofWholeMonth < 100000) {
-    await subtractMoney(currentAccount.accountNumber, 1000, ACCOUNT_TYPES.SAVINGS);
-    await addTransaction(0, TRANSACTION_TYPES.PENALTY_FOR_NRV, currentAccount.accountNumber, null, interestToBeAdded, formattedDate, newBalance, null);
+  if (totalNRVofWholeMonth < SAVINGS_ACCOUNT_NRV) {
+    // await subtractMoney(currentAccount.accountNumber, SAVINGS_ACCOUNT_NRV_PENALTY, ACCOUNT_TYPES.SAVINGS);
+    // await addTransaction(0, TRANSACTION_TYPES.PENALTY_FOR_NRV, currentAccount.accountNumber, null, interestToBeAdded, formattedDate, newBalance, null);
+    const senderTransactionNumber = generateTransactionNumber();
+    await subtractMoneyWithTransaction({
+      accountNumber: currentAccount.accountNumber,
+      amount: SAVINGS_ACCOUNT_NRV_PENALTY,
+      accountType: ACCOUNT_TYPES.SAVINGS,
+      transactionType: TRANSACTION_TYPES.PENALTY_FOR_NRV,
+      senderTransactionNumber,
+      amountBeforeTransaction: newBalance,
+    });
     return { status: true, message: 'Penalty imposed' };
   }
   return { status: false, message: 'Penalty not imposed' };
@@ -198,8 +215,6 @@ const addInterestOnLoanAccount = async (loanAccount) => {
   const creationMonthOfLoanAccount = loanAccount.createdAt.getMonth() + 1;
   const creationYearOfLoanAccount = loanAccount.createdAt.getFullYear();
 
-  const currentDate = Date(Date.now()).toString();
-  const formattedDate = formatDate(currentDate);
   const todayDate = new Date(Date.now());
   const currentMonth = todayDate.getMonth() + 1;
   const currentDay = todayDate.getDate();
@@ -259,14 +274,22 @@ const addInterestOnLoanAccount = async (loanAccount) => {
   }
   const average = total / count;
   const interestToAdd = parseInt(((average / 100) * interestToBeAdded) / 2, 10);
-  await addMoney(loanAccount.accountNumber, interestToAdd, ACCOUNT_TYPES.LOAN);
-  await addTransaction(0, TRANSACTION_TYPES.LOAN_INTEREST_ADDED, null, loanAccount.accountNumber, interestToAdd, formattedDate, null, loanAccount.balance);
+  // await addMoney(loanAccount.accountNumber, interestToAdd, ACCOUNT_TYPES.LOAN);
+  // await addTransaction(0, TRANSACTION_TYPES.LOAN_INTEREST_ADDED, null, loanAccount.accountNumber, interestToAdd, formattedDate, null, loanAccount.balance);
+  const receiverTransactionNumber = generateTransactionNumber();
+  await addMoneyWithTransaction({
+    accountNumber: loanAccount.accountNumber,
+    amount: interestToAdd,
+    accountType: ACCOUNT_TYPES.LOAN,
+    transactionType: TRANSACTION_TYPES.LOAN_INTEREST_ADDED,
+    receiverTransactionNumber,
+    amountBeforeTransaction: loanAccount.balance,
+  });
   return { status: true, message: 'Interest added' };
 };
 
 const calculateNrvAndDeductPenalty = async (currentAccount) => {
   const currentDate = Date(Date.now()).toString();
-  const formattedDate = formatDate(currentDate);
   const d = new Date(Date.now());
   const prevDate = new Date(d);
   prevDate.setDate(prevDate.getDate() - 1);
@@ -300,9 +323,18 @@ const calculateNrvAndDeductPenalty = async (currentAccount) => {
   }
 
   // If NRV falls below 100000, then we should charge Rs. 1000 to the user...
-  if (totalNRVofWholeMonth < 500000) {
-    await subtractMoney(currentAccount.accountNumber, 5000, ACCOUNT_TYPES.CURRENT);
-    await addTransaction(0, TRANSACTION_TYPES.PENALTY_FOR_NRV, currentAccount.accountNumber, null, 5000, formattedDate, newBalance, null);
+  if (totalNRVofWholeMonth < CURRENT_ACCOUNT_NRV) {
+    // await subtractMoney(currentAccount.accountNumber, CURRENT_ACCOUNT_NRV_PENALTY, ACCOUNT_TYPES.CURRENT);
+    // await addTransaction(0, TRANSACTION_TYPES.PENALTY_FOR_NRV, currentAccount.accountNumber, null, CURRENT_ACCOUNT_NRV_PENALTY, formattedDate, newBalance, null);
+    const senderTransactionNumber = generateTransactionNumber();
+    await subtractMoneyWithTransaction({
+      accountNumber: currentAccount.accountNumber,
+      amount: CURRENT_ACCOUNT_NRV_PENALTY,
+      accountType: ACCOUNT_TYPES.CURRENT,
+      transactionType: TRANSACTION_TYPES.PENALTY_FOR_NRV,
+      senderTransactionNumber,
+      amountBeforeTransaction: newBalance,
+    });
     return { message1, message2: 'Penalty imposed, because of NRV' };
   }
   return { message1, message2: 'Penalty not imposed, since NRV is maintained' };

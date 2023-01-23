@@ -2,21 +2,16 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable max-len */
-const { deductFromBalance, addToBalance, fetchAccountDetailsFromIdAndType } = require('../models/accountsModel');
+const { deductFromBalance, fetchAccountDetailsFromIdAndType } = require('../models/accountsModel');
 const { getLoanAccountDetails} = require('../models/loanAccountModel');
 const {
-  getSumOfAmountFromAccountNoAndTransactionType, fetchParticularMonthTransactionCountOfAccount, fetchParticularDayWithdrawAmount, fetchParticularMonthAtmWithdrawCount, insertIntoTransaction, fetchParticularMonthTransactions, fetchLoanTransactions, transferMoney, withdrawFromAtm, withdrawFromBank, loanRepayment, depositMoney,
+  getSumOfAmountFromAccountNoAndTransactionType, fetchParticularMonthTransactionCountOfAccount, fetchParticularDayWithdrawAmount, fetchParticularMonthAtmWithdrawCount, fetchParticularMonthTransactions, fetchLoanTransactions, transferMoney, withdrawFromAtm, withdrawFromBank, loanRepayment, depositMoney,
 } = require('../models/transactionModel');
-const { TRANSACTION_TYPES, ACCOUNT_TYPES } = require('../utils/constants');
+const { TRANSACTION_TYPES, ACCOUNT_TYPES, TRANSACTION_CHARGE_RATE, MAXIMUM_DAILY_WITHDRAW_AMOUNT, ONE_TIME_WITHDRAW_LIMIT, MAXIMUM_TRANSACTION_CHARGE_AMOUNT } = require('../utils/constants');
 const {
-  formatDate, getNumberOfDays, generateTransactionNumber, getUserId,
+  getNumberOfDays, generateTransactionNumber, getUserId,
 } = require('../utils/utils');
 const { verifyCardDetails } = require('./atmServices');
-
-const getUserAccountDetailsOfLoanAccount = async (userId) => {
-  const result = await getLoanAccountDetails(userId);
-  return result;
-};
 
 const getTransactionCountForAccount = async (accountNumber, formattedDate) => {
   const d = new Date(formattedDate);
@@ -45,11 +40,6 @@ const subtractMoney = async (accountNumber, amount, accountType) => {
   return result;
 };
 
-const addMoney = async (accountNumber, amount, accountType) => {
-  const result = await addToBalance(accountNumber, amount, accountType);
-  return result;
-};
-
 const getCurrentDayWithdrawalAmount = async (accountNumber) => {
   const d = new Date(Date.now());
   const month = `${d.getMonth() + 1}`;
@@ -65,22 +55,6 @@ const getCurrentMonthAtmWithdrawCount = async (accountNumber) => {
   const year = d.getFullYear();
   const result = await fetchParticularMonthAtmWithdrawCount(accountNumber, month, year);
   return result;
-};
-
-const addTransaction = async (transactionNumber, transactionType, senderAccountNumber, receiverAccountNumber, amount, formattedDate, senderAmountBeforeTransaction, receiverAmountBeforeTransaction) => {
-  const senderTransactionNumber = generateTransactionNumber();
-  const receiverTransactionNumber = generateTransactionNumber();
-
-  if (senderAccountNumber != null) {
-    // Now, we need to add transaction for the SENDER
-    const result = await insertIntoTransaction(senderTransactionNumber, transactionType, senderAccountNumber, -1 * amount, senderAmountBeforeTransaction);
-    if (receiverAccountNumber == null) { return result; }
-  }
-  if (receiverAccountNumber != null) {
-    // Now, we need to add transaction for the RECEIVER
-    const result = await insertIntoTransaction(receiverTransactionNumber, transactionType, receiverAccountNumber, amount, receiverAmountBeforeTransaction);
-    return result;
-  }
 };
 
 const getMinBalance = async (month, year, accountNumber, balance, numberOfDays) => {
@@ -191,7 +165,7 @@ const getMinBalanceOfLoanAccount = async (startDate, endDate, numberOfDays, acco
 
 const loanRepaymentService = async ({ id, amount }) => {
   // If receiver does not have "LOAN" account..
-  const account = await getUserAccountDetailsOfLoanAccount(id);
+  const account = await getLoanAccountDetails(id);
   if (!account) {
     return { status: false, message: 'User account does not exist' };
   }
@@ -236,7 +210,7 @@ const depositMoneyService = async ({ id, accountType, amount }) => {
   const transactionType = TRANSACTION_TYPES.DEPOSIT;
 
   // If account is "CURRENT", then we need to put transaction charge of 0.5% of amount
-  const transactionCharge = Math.min((amount / 100) * 0.5, 500);
+  const transactionCharge = Math.min((amount / 100) * TRANSACTION_CHARGE_RATE, MAXIMUM_TRANSACTION_CHARGE_AMOUNT);
 
   const depositMoneyResponse = await depositMoney({
     accountNumber: account.accountNumber,
@@ -258,15 +232,14 @@ const withdrawFromBankService = async (req) => {
   if (!account) {
     return { status: false, message: 'Account does not exist' };
   }
-  if (account.balance < amount || (accountType === 'SAVINGS' && amount > 20000)) {
+  if (account.balance < amount || (accountType === ACCOUNT_TYPES.SAVINGS && amount > ONE_TIME_WITHDRAW_LIMIT)) {
     return { status: false, message: 'Amount excedded' };
   }
 
-  // Checking whether total withdraw amount for current day does not exceed by 50000
   const currentDayWithdrawalAmountResult = await getCurrentDayWithdrawalAmount(account.accountNumber);
   const currentDayWithdrawalAmount = currentDayWithdrawalAmountResult.rows[0].sum;
   const totalAmount = parseInt(-1 * currentDayWithdrawalAmount, 10) + parseInt(amount, 10);
-  if (totalAmount > 50000) {
+  if (totalAmount > MAXIMUM_DAILY_WITHDRAW_AMOUNT) {
     return { status: false, message: 'Money withdrawal amount limit excedded' };
   }
 
@@ -299,7 +272,7 @@ const withdrawFromAtmService = async (req) => {
     return { status: false, message: 'Invalid Details' };
   }
 
-  if (account.balance < amount || amount > 20000) {
+  if (account.balance < amount || amount > ONE_TIME_WITHDRAW_LIMIT) {
     return { status: false, message: 'Amount excedded' };
   }
 
@@ -307,7 +280,7 @@ const withdrawFromAtmService = async (req) => {
   const currentDayWithdrawalAmount = currentDayWithdrawalAmountResult.rows[0].sum;
 
   const totalAmount = parseInt(-1 * currentDayWithdrawalAmount, 10) + parseInt(amount, 10);
-  if (totalAmount > 50000) {
+  if (totalAmount > MAXIMUM_DAILY_WITHDRAW_AMOUNT) {
     return { status: false, message: 'Money withdrawal amount limit excedded' };
   }
 
@@ -333,10 +306,10 @@ const transferMoneyService = async (req) => {
   const { id, receiverUsername, amount } = req;
 
   const senderUserId = id;
-  const senderAccount = await getUserAccountDetailsOfParticularType(senderUserId, 'CURRENT');
+  const senderAccount = await getUserAccountDetailsOfParticularType(senderUserId, ACCOUNT_TYPES.CURRENT);
 
   const receiverUserId = getUserId(receiverUsername);
-  const receiverAccount = await getUserAccountDetailsOfParticularType(receiverUserId, 'CURRENT');
+  const receiverAccount = await getUserAccountDetailsOfParticularType(receiverUserId, ACCOUNT_TYPES.CURRENT);
 
   if (!senderAccount) {
     return { status: false, message: 'Current Account does not exist' };
@@ -346,7 +319,7 @@ const transferMoneyService = async (req) => {
   }
 
   // If account is "CURRENT", then we need to put transaction charge of 0.5% of amount
-  const transactionCharge = Math.min((amount / 100) * 0.5, 500);
+  const transactionCharge = Math.min((amount / 100) * TRANSACTION_CHARGE_RATE, MAXIMUM_TRANSACTION_CHARGE_AMOUNT);
   if ((senderAccount.balance + transactionCharge) <= amount) {
     return { status: false, message: 'Amount excedded' };
   }
@@ -412,15 +385,12 @@ const handleTransactions = async ({
 };
 
 module.exports = {
-  getUserAccountDetailsOfLoanAccount,
   getTransactionCountForAccount,
   getUserAccountDetailsOfParticularType,
   getTotalDepositsOfUser,
   subtractMoney,
-  addMoney,
   getCurrentDayWithdrawalAmount,
   getCurrentMonthAtmWithdrawCount,
-  addTransaction,
   getMinBalance,
   getMinBalanceOfLoanAccount,
   loanRepaymentService,

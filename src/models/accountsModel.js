@@ -44,16 +44,6 @@ const deductFromBalance = async (amount, accountNumber, accountType) => {
   return result;
 };
 
-const addToBalance = async (accountNumber, amount, accountType) => {
-  const result = await pool.query(
-    `UPDATE accounts
-              SET balance = balance + $1
-              WHERE "accountNumber" = $2 AND "accountType" = $3`,
-    [amount, accountNumber, accountType],
-  );
-  return result;
-};
-
 const loanAccountEntry = async (
   {
     accountNumber, accountType, id, formattedDate, amount, loanInterest, loanType, duration, loanStatus,
@@ -131,7 +121,6 @@ module.exports = {
   fetchUserAccounts,
   fetchAccountDetailsFromIdAndType,
   deductFromBalance,
-  addToBalance,
   fetchAccountsFromType,
   savingsAccountEntry,
   loanAccountEntry,

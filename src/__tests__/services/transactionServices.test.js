@@ -8,7 +8,7 @@ const {
 } = require('../../services/accountServices.js');
 const { getCardDetailsFromAccountNumber } = require('../../services/atmServices.js');
 const {
-  handleTransactions, getCurrentMonthAtmWithdrawCount, getCurrentDayWithdrawalAmount, addMoney, subtractMoney, getTotalDepositsOfUser, getMinBalance, getMinBalanceOfLoanAccount,
+  handleTransactions, getCurrentMonthAtmWithdrawCount, getCurrentDayWithdrawalAmount, subtractMoney, getTotalDepositsOfUser, getMinBalance, getMinBalanceOfLoanAccount,
 } = require('../../services/transactionServices.js');
 const { signUpUser } = require('../../services/userProfleServices.js');
 const { getUserId } = require('../../utils/utils.js');
@@ -102,7 +102,7 @@ describe('Transaction services testing', () => {
   it('Should not withdraw money from bank', async () => {
     const response = await handleTransactions({ id: userId1, accountType: 'SAVINGS', amount: -60000 });
     expect(response.status).toBe(false);
-    expect(response.message).toBe('Money withdrawal amount limit excedded');
+    expect(response.message).toBe('Amount excedded');
   });
 
   it('Should not withdraw money from bank', async () => {
@@ -136,11 +136,6 @@ describe('Transaction services testing', () => {
   it('Should give amount equal to 4000', async () => {
     const response = await getCurrentDayWithdrawalAmount(accNo1);
     expect(response.rows[0].sum).toBe('-4000');
-  });
-
-  it('Should not add money to balance', async () => {
-    const response = await addMoney(1234567892, 5000, 'CURRENT');
-    expect(response.rowCount).toBe(0);
   });
 
   it('Should not subtract money from balance', async () => {

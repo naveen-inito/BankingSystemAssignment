@@ -3,14 +3,6 @@
 const { pool } = require('../db/connection');
 const { TRANSACTION_TYPES, LOAN_STATUS } = require('../utils/constants');
 
-const insertIntoTransaction = async (transactionNumber, transactionType, accountNumber, amount, amountBeforeTransaction) => {
-  const result = await pool.query(
-    'INSERT INTO transaction ("transactionNumber", "transactionType", "accountNo", "amount", "amountBeforeTransaction") values($1,$2,$3,$4,$5)',
-    [transactionNumber, transactionType, accountNumber, amount, amountBeforeTransaction],
-  );
-  return result;
-};
-
 const fetchAllTransactionOfAccount = async (accountNumber, page = 1, size = 50) => {
   const result = await pool.query(
     `SELECT * from transaction
@@ -339,13 +331,90 @@ const depositMoney = async ({
   }
 };
 
+const addMoneyWithTransaction = async ({
+  accountNumber,
+  amount,
+  accountType,
+  transactionType,
+  receiverTransactionNumber,
+  amountBeforeTransaction,
+}) => {
+  let client;
+  try {
+    client = await pool.connect();
+    await client.query('BEGIN');
+
+    const addBalanceQuery = await client.query(
+      `UPDATE accounts
+              SET balance = balance + $1
+              WHERE "accountNumber" = $2 AND "accountType" = $3`,
+      [amount, accountNumber, accountType],
+    );
+    if (addBalanceQuery.rowCount === 0) { throw new Error(); }
+
+    const result = await client.query(
+      'INSERT INTO transaction ("transactionNumber", "transactionType", "accountNo", "amount", "amountBeforeTransaction") values($1,$2,$3,$4,$5)',
+      [receiverTransactionNumber, transactionType, accountNumber, amount, amountBeforeTransaction],
+    );
+    if (result.rowCount === 0) { throw new Error(); }
+
+    await client.query('COMMIT');
+    return { status: true, message: 'added money' };
+  } catch (e) {
+    await client.query('ROLLBACK');
+    // throw e;
+    console.log(e);
+    return { status: false, message: 'Money could not be added' };
+  } finally {
+    client.release();
+  }
+};
+
+const subtractMoneyWithTransaction = async ({
+  accountNumber,
+  amount,
+  accountType,
+  transactionType,
+  senderTransactionNumber,
+  amountBeforeTransaction,
+}) => {
+  let client;
+  try {
+    client = await pool.connect();
+    await client.query('BEGIN');
+
+    const deductBalanceQuery = await client.query(
+      `UPDATE accounts
+              SET balance = balance - $1
+              WHERE "accountNumber" = $2 AND "accountType" = $3`,
+      [amount, accountNumber, accountType],
+    );
+    if (deductBalanceQuery.rowCount === 0) { throw new Error(); }
+
+    const result = await client.query(
+      'INSERT INTO transaction ("transactionNumber", "transactionType", "accountNo", "amount", "amountBeforeTransaction") values($1,$2,$3,$4,$5)',
+      [senderTransactionNumber, transactionType, accountNumber, -1 * amount, amountBeforeTransaction],
+    );
+    if (result.rowCount === 0) { throw new Error(); }
+
+    await client.query('COMMIT');
+    return { status: true, message: 'added money' };
+  } catch (e) {
+    await client.query('ROLLBACK');
+    // throw e;
+    console.log(e);
+    return { status: false, message: 'Money could not be added' };
+  } finally {
+    client.release();
+  }
+};
+
 module.exports = {
   fetchAllTransactionOfAccount,
   getSumOfAmountFromAccountNoAndTransactionType,
   fetchParticularMonthTransactionCountOfAccount,
   fetchParticularDayWithdrawAmount,
   fetchParticularMonthAtmWithdrawCount,
-  insertIntoTransaction,
   fetchParticularMonthTransactions,
   fetchLoanTransactions,
   transferMoney,
@@ -353,4 +422,6 @@ module.exports = {
   withdrawFromBank,
   loanRepayment,
   depositMoney,
+  addMoneyWithTransaction,
+  subtractMoneyWithTransaction,
 };
