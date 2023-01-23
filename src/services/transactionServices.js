@@ -11,7 +11,7 @@ const {
   TRANSACTION_TYPES, ACCOUNT_TYPES, TRANSACTION_CHARGE_RATE, MAXIMUM_DAILY_WITHDRAW_AMOUNT, ONE_TIME_WITHDRAW_LIMIT, MAXIMUM_TRANSACTION_CHARGE_AMOUNT,
 } = require('../utils/constants');
 const {
-  getNumberOfDays, generateTransactionNumber, getUserId,
+  getNumberOfDays, generateTransactionNumber, getUserId, formatDate,
 } = require('../utils/utils');
 const { verifyCardDetails } = require('./atmServices');
 
@@ -114,7 +114,6 @@ const getMinBalanceOfLoanAccount = async (startDate, endDate, numberOfDays, acco
   const result = await fetchLoanTransactions(accountNumber, startDate, endDate);
   const allTransactions = result.rows;
   const transactionCount = allTransactions.length;
-  console.log(transactionCount,", ",startDate, ", ", endDate, ", ", typeof(startDate),", ",typeof(endDate));
 
   const noOfDays = numberOfDays;
   const startDay = new Array(noOfDays + 1);

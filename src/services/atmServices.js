@@ -1,7 +1,7 @@
 const { makeid, formatDate } = require('../utils/utils');
-const { insertIntoATM, getCardDetails, fetchCardDetailsFromAccountNumber } = require('../models/atmModel');
+const { getCardDetails, fetchCardDetailsFromAccountNumber } = require('../models/atmModel');
 
-const issueAtmCard = async (accountNumber) => {
+const issueAtmCard = async () => {
   const cardNumber = makeid(16, '0123456789');
   const cvv = makeid(3, '0123456789');
 

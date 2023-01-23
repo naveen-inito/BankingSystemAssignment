@@ -9,7 +9,7 @@ const {
 } = require('../../services/accountServices.js');
 const { handleTransactions } = require('../../services/transactionServices.js');
 const { signUpUser } = require('../../services/userProfleServices.js');
-const { getUserId } = require('../../utils/utils.js');
+const { getUserId, formatDate } = require('../../utils/utils.js');
 
 describe('Account services testing', () => {
   const { pool } = require('../../db/connection.js');
@@ -154,10 +154,14 @@ describe('Account services testing', () => {
     const RealDate = Date.now;
     // Date.now = jest.fn(() => new Date(Date.UTC(2010, 6, 23)).valueOf());
     Date.now = jest.fn(() => Date.parse('2010-07-23'));
+    const currentDate = Date(Date.now()).toString();
+    const formattedDate = formatDate(currentDate);
+    console.log(currentDate,", ",formattedDate)
 
     const response1 = await handleTransactions({ id: userId1, accountType: 'LOAN', amount: 22000 });
     expect(response1.status).toBe(true);
     expect(response1.message).toBe('Loan amount paid successfully');
+    await pool.query(`UPDATE transaction SET "dateOfTransaction" = ' 2010-07-23 00:00:00.000000' WHERE "accountNo" = ${loanAccountNumber1}`);
 
     const loanAccount = await fetchActiveLoanAccountsFromAccountNumber(loanAccountNumber1);
     const response2 = await addInterestOnLoanAccount(loanAccount);

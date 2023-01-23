@@ -2,6 +2,7 @@
 /* eslint-disable max-len */
 const { pool } = require('../db/connection');
 const { TRANSACTION_TYPES, LOAN_STATUS } = require('../utils/constants');
+const { formatDate } = require('../utils/utils');
 
 const fetchAllTransactionOfAccount = async (accountNumber, page = 1, size = 50) => {
   const result = await pool.query(
@@ -73,17 +74,15 @@ const fetchParticularMonthTransactions = async (accountNumber, month, year) => {
 };
 
 const fetchLoanTransactions = async (accountNumber, startDate, endDate) => {
+  startDate = formatDate(startDate);
+  endDate = formatDate(endDate);
   const result = await pool.query(
-    // `SELECT * FROM transaction
-    //           WHERE "accountNo" = $1
-    //           AND "dateOfTransaction" >= $2
-    //           AND "dateOfTransaction" <= $3
-    //           ORDER BY "dateOfTransaction" ASC`,
-    // [accountNumber, startDate, endDate],
     `SELECT * FROM transaction
               WHERE "accountNo" = $1
+              AND "dateOfTransaction" >= $2
+              AND "dateOfTransaction" <= $3
               ORDER BY "dateOfTransaction" ASC`,
-    [accountNumber],
+    [accountNumber, startDate, endDate],
   );
   return result;
 };

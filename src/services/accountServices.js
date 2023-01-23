@@ -6,7 +6,7 @@ const {
 const { loanAccountStatus, getLastInterestAddedDates, getLoanAccountDetails } = require('../models/loanAccountModel');
 const { fetchAllTransactionOfAccount, addMoneyWithTransaction, subtractMoneyWithTransaction } = require('../models/transactionModel');
 const {
-  ACCOUNT_TYPES, INTEREST_RATES, TOTAL_DEPOSIT_RATE_FOR_LOAN, MINIMUM_LOAN_AMOUNT, MINIMUM_CURRENT_OPENING_AMOUNT, MINIMUM_SAVINGS_OPENING_AMOUNT, MINIMUM_AGE_FOR_CURRENT, MINIMUM_AGE_FOR_LOAN, LOAN_STATUS, TYPES_OF_ACCOUNT, TRANSACTION_TYPES, CURRENT_ACCOUNT_NRV, CURRENT_ACCOUNT_NRV_PENALTY, SAVINGS_ACCOUNT_NRV, SAVINGS_ACCOUNT_NRV_PENALTY, SAVINGS_ACCOUNT_INTEREST_RATE, MONTHS_IN_YEAR,
+  ACCOUNT_TYPES, INTEREST_RATES, TOTAL_DEPOSIT_RATE_FOR_LOAN, MINIMUM_LOAN_AMOUNT, MINIMUM_CURRENT_OPENING_AMOUNT, MINIMUM_SAVINGS_OPENING_AMOUNT, MINIMUM_AGE_FOR_CURRENT, MINIMUM_AGE_FOR_LOAN, LOAN_STATUS, TYPES_OF_ACCOUNT, TRANSACTION_TYPES, CURRENT_ACCOUNT_NRV, CURRENT_ACCOUNT_NRV_PENALTY, SAVINGS_ACCOUNT_NRV, SAVINGS_ACCOUNT_NRV_PENALTY, SAVINGS_ACCOUNT_INTEREST_RATE, MONTHS_IN_YEAR, LESS_THAN_3_TRANSACTION_PENALTY, TIMES_LOAN_INTEREST_ADDED_ANNUALLY,
 } = require('../utils/constants');
 const {
   generateAccountNo, calculateAge, formatDate, getLastDayOfMonthYear, generateTransactionNumber,
@@ -38,7 +38,7 @@ const createSavingsAccount = async (id, amount, accountNumber, formattedDate) =>
     return { status: false, message: 'Minimum amount error' };
   }
 
-  const { cardNumber, expiryDate, cvv } = await issueAtmCard(accountNumber);
+  const { cardNumber, expiryDate, cvv } = await issueAtmCard();
   const accountType = ACCOUNT_TYPES.SAVINGS;
   const savingsAccountResponse = await savingsAccountEntry({
     accountNumber, accountType, id, formattedDate, amount, cardNumber, expiryDate, cvv,
@@ -208,6 +208,7 @@ const addInterestOnLoanAccount = async (loanAccount) => {
   const currentMonth = todayDate.getMonth() + 1;
   const currentDay = todayDate.getDate();
   const currentYear = todayDate.getFullYear();
+  // const formattedDate = formatDate(todayDate);
 
   const lastDateOfMonth = await getLastDayOfMonthYear(currentYear, currentMonth);
   const interestToBeAdded = loanAccount.interest;
@@ -262,7 +263,7 @@ const addInterestOnLoanAccount = async (loanAccount) => {
     }
   }
   const average = total / count;
-  const interestToAdd = parseInt(((average / 100) * interestToBeAdded) / 2, 10);
+  const interestToAdd = parseInt(((average / 100) * interestToBeAdded) / TIMES_LOAN_INTEREST_ADDED_ANNUALLY, 10);
   const receiverTransactionNumber = generateTransactionNumber();
   await addMoneyWithTransaction({
     accountNumber: loanAccount.accountNumber,
@@ -292,9 +293,9 @@ const calculateNrvAndDeductPenalty = async (currentAccount) => {
   let newBalance = currentAccount.balance;
   if (transactionCountForUser < 3) {
     // Now, deduct amount of 500 from this account
-    const subtractMoneyResponse = await subtractMoney(currentAccount.accountNumber, 500, currentAccount.account_type);
+    const subtractMoneyResponse = await subtractMoney(currentAccount.accountNumber, LESS_THAN_3_TRANSACTION_PENALTY, currentAccount.account_type);
     if (subtractMoneyResponse.rowCount !== 0) {
-      newBalance -= 500;
+      newBalance -= LESS_THAN_3_TRANSACTION_PENALTY;
     }
     message1 = 'Penalty imposed, since has less than 3 transactions';
   }
