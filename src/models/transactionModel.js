@@ -74,12 +74,16 @@ const fetchParticularMonthTransactions = async (accountNumber, month, year) => {
 
 const fetchLoanTransactions = async (accountNumber, startDate, endDate) => {
   const result = await pool.query(
+    // `SELECT * FROM transaction
+    //           WHERE "accountNo" = $1
+    //           AND "dateOfTransaction" >= $2
+    //           AND "dateOfTransaction" <= $3
+    //           ORDER BY "dateOfTransaction" ASC`,
+    // [accountNumber, startDate, endDate],
     `SELECT * FROM transaction
               WHERE "accountNo" = $1
-              AND "dateOfTransaction" >= $2
-              AND "dateOfTransaction" <= $3
               ORDER BY "dateOfTransaction" ASC`,
-    [accountNumber, startDate, endDate],
+    [accountNumber],
   );
   return result;
 };

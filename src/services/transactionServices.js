@@ -3,11 +3,13 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable max-len */
 const { deductFromBalance, fetchAccountDetailsFromIdAndType } = require('../models/accountsModel');
-const { getLoanAccountDetails} = require('../models/loanAccountModel');
+const { getLoanAccountDetails } = require('../models/loanAccountModel');
 const {
   getSumOfAmountFromAccountNoAndTransactionType, fetchParticularMonthTransactionCountOfAccount, fetchParticularDayWithdrawAmount, fetchParticularMonthAtmWithdrawCount, fetchParticularMonthTransactions, fetchLoanTransactions, transferMoney, withdrawFromAtm, withdrawFromBank, loanRepayment, depositMoney,
 } = require('../models/transactionModel');
-const { TRANSACTION_TYPES, ACCOUNT_TYPES, TRANSACTION_CHARGE_RATE, MAXIMUM_DAILY_WITHDRAW_AMOUNT, ONE_TIME_WITHDRAW_LIMIT, MAXIMUM_TRANSACTION_CHARGE_AMOUNT } = require('../utils/constants');
+const {
+  TRANSACTION_TYPES, ACCOUNT_TYPES, TRANSACTION_CHARGE_RATE, MAXIMUM_DAILY_WITHDRAW_AMOUNT, ONE_TIME_WITHDRAW_LIMIT, MAXIMUM_TRANSACTION_CHARGE_AMOUNT,
+} = require('../utils/constants');
 const {
   getNumberOfDays, generateTransactionNumber, getUserId,
 } = require('../utils/utils');
@@ -110,9 +112,9 @@ const getMinBalance = async (month, year, accountNumber, balance, numberOfDays) 
 
 const getMinBalanceOfLoanAccount = async (startDate, endDate, numberOfDays, accountNumber, balance) => {
   const result = await fetchLoanTransactions(accountNumber, startDate, endDate);
-
   const allTransactions = result.rows;
   const transactionCount = allTransactions.length;
+  console.log(transactionCount,", ",startDate, ", ", endDate, ", ", typeof(startDate),", ",typeof(endDate));
 
   const noOfDays = numberOfDays;
   const startDay = new Array(noOfDays + 1);

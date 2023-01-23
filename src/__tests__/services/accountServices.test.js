@@ -7,6 +7,7 @@ const { fetchActiveLoanAccountsFromAccountNumber } = require('../../models/loanA
 const {
   createBankAccount, getAllAccountDetails, validateAgeForAcccount, getLoanInterest, addInterestOnLoanAccount, jobForCalculatingInterestOnSavingAccount, calculateNrvAndDeductPenalty,
 } = require('../../services/accountServices.js');
+const { handleTransactions } = require('../../services/transactionServices.js');
 const { signUpUser } = require('../../services/userProfleServices.js');
 const { getUserId } = require('../../utils/utils.js');
 
@@ -151,12 +152,17 @@ describe('Account services testing', () => {
     // changing the creation date of loan account to calculate the interest
     await pool.query(`UPDATE accounts SET "createdAt" = '2010-01-23' WHERE "accountNumber" = ${loanAccountNumber1}`);
     const RealDate = Date.now;
-    Date.now = jest.fn(() => new Date(Date.UTC(2010, 6, 23)).valueOf());
+    // Date.now = jest.fn(() => new Date(Date.UTC(2010, 6, 23)).valueOf());
+    Date.now = jest.fn(() => Date.parse('2010-07-23'));
+
+    const response1 = await handleTransactions({ id: userId1, accountType: 'LOAN', amount: 22000 });
+    expect(response1.status).toBe(true);
+    expect(response1.message).toBe('Loan amount paid successfully');
+
     const loanAccount = await fetchActiveLoanAccountsFromAccountNumber(loanAccountNumber1);
-    console.log(loanAccount);
-    const response = await addInterestOnLoanAccount(loanAccount);
-    expect(response.status).toBe(true);
-    expect(response.message).toBe('Interest added');
+    const response2 = await addInterestOnLoanAccount(loanAccount);
+    expect(response2.status).toBe(true);
+    expect(response2.message).toBe('Interest added');
     Date.now = RealDate;
   });
 

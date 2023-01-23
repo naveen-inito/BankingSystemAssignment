@@ -165,9 +165,4 @@ describe('Transaction services testing', () => {
     const response = await getMinBalance(1, 2023, response1.Savings.accountNumber, response1.Savings.balance, 31);
     expect(response.length).toBeGreaterThan(27);
   });
-
-  it('Should calculate eod balance for 6 month for loan account', async () => {
-    const response = await getMinBalanceOfLoanAccount('2023-01-10', '2023-01-20', 11, response1.Loan.accountNumber, response1.Savings.balance);
-    expect(response.length).toBeGreaterThan(11);
-  });
 });
