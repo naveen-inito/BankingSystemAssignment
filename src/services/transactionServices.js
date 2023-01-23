@@ -3,7 +3,7 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable max-len */
 const { deductFromBalance, addToBalance, fetchAccountDetailsFromIdAndType } = require('../models/accountsModel');
-const { getLoanAccountDetails, deductAmountFromLoanAccount } = require('../models/loanAccountModel');
+const { getLoanAccountDetails} = require('../models/loanAccountModel');
 const {
   getSumOfAmountFromAccountNoAndTransactionType, fetchParticularMonthTransactionCountOfAccount, fetchParticularDayWithdrawAmount, fetchParticularMonthAtmWithdrawCount, insertIntoTransaction, fetchParticularMonthTransactions, fetchLoanTransactions, transferMoney, withdrawFromAtm, withdrawFromBank, loanRepayment, depositMoney,
 } = require('../models/transactionModel');
@@ -42,10 +42,6 @@ const getTotalDepositsOfUser = (userRows) => {
 
 const subtractMoney = async (accountNumber, amount, accountType) => {
   const result = await deductFromBalance(amount, accountNumber, accountType);
-  return result;
-};
-const subtractMoneyFromLoanAccount = async (accountNumber, amount) => {
-  const result = await deductAmountFromLoanAccount(accountNumber, amount);
   return result;
 };
 
@@ -421,7 +417,6 @@ module.exports = {
   getUserAccountDetailsOfParticularType,
   getTotalDepositsOfUser,
   subtractMoney,
-  subtractMoneyFromLoanAccount,
   addMoney,
   getCurrentDayWithdrawalAmount,
   getCurrentMonthAtmWithdrawCount,

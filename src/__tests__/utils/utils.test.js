@@ -4,7 +4,7 @@
 /* eslint-disable no-undef */
 
 const {
-  createMapper, generateTransactionNumber, generateAccountNo, getLastDayOfMonthYear, calculateAge,
+  createMapper, generateTransactionNumber, generateAccountNo, getLastDayOfMonthYear, calculateAge, getNumberOfDays,
 } = require('../../utils/utils.js');
 
 describe('Testing utils', () => {
@@ -45,4 +45,9 @@ describe('Testing utils', () => {
     const response = await calculateAge(new Date('2001-04-11'));
     expect(response).toBe(21);
   });
+
+  // it('get date difference', async () => {
+  //   const response = await getNumberOfDays('2023-01-22', '2023-01-23');
+  //   expect(response).toBe(2);
+  // });
 });

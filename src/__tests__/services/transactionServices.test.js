@@ -8,7 +8,7 @@ const {
 } = require('../../services/accountServices.js');
 const { getCardDetailsFromAccountNumber } = require('../../services/atmServices.js');
 const {
-  handleTransactions, getCurrentMonthAtmWithdrawCount, getCurrentDayWithdrawalAmount, addMoney, subtractMoney, subtractMoneyFromLoanAccount, getTotalDepositsOfUser, getMinBalance, getMinBalanceOfLoanAccount,
+  handleTransactions, getCurrentMonthAtmWithdrawCount, getCurrentDayWithdrawalAmount, addMoney, subtractMoney, getTotalDepositsOfUser, getMinBalance, getMinBalanceOfLoanAccount,
 } = require('../../services/transactionServices.js');
 const { signUpUser } = require('../../services/userProfleServices.js');
 const { getUserId } = require('../../utils/utils.js');
@@ -100,6 +100,12 @@ describe('Transaction services testing', () => {
   });
 
   it('Should not withdraw money from bank', async () => {
+    const response = await handleTransactions({ id: userId1, accountType: 'SAVINGS', amount: -60000 });
+    expect(response.status).toBe(false);
+    expect(response.message).toBe('Money withdrawal amount limit excedded');
+  });
+
+  it('Should not withdraw money from bank', async () => {
     const response = await handleTransactions({ id: userId1, accountType: 'SAVINGS', amount: -22000 });
     expect(response.status).toBe(false);
     expect(response.message).toBe('Amount excedded');
@@ -140,16 +146,6 @@ describe('Transaction services testing', () => {
   it('Should not subtract money from balance', async () => {
     const response = await subtractMoney(1234567892, 5000, 'CURRENT');
     expect(response.rowCount).toBe(0);
-  });
-
-  it('Should not subtract money from balance', async () => {
-    const response = await subtractMoneyFromLoanAccount(response1.Loan.accountNumber, 5000);
-    expect(response.rowCount).toBe(1);
-  });
-
-  it('Should not subtract money from balance', async () => {
-    const response = await subtractMoneyFromLoanAccount(response1.Loan.accountNumber, 5000);
-    expect(response.rowCount).toBe(1);
   });
 
   it('Should get deposits of the user', async () => {

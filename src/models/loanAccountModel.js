@@ -2,14 +2,6 @@
 const { pool } = require('../db/connection');
 const { LOAN_STATUS, ACCOUNT_TYPES, TRANSACTION_TYPES } = require('../utils/constants');
 
-const insertIntoLoanAccounts = async (accountNumber, loanType, loanInterest, amount, duration, status) => {
-  const result = await pool.query(
-    'INSERT INTO loan_account ("accountNumber", "loanType", "interest", "amount", "duration", "status") values($1,$2,$3,$4,$5,$6)',
-    [accountNumber, loanType, loanInterest, amount, duration, status],
-  );
-  return result;
-};
-
 const fetchActiveLoanAccounts = async () => {
   const result = await pool.query(
     `select *
@@ -70,21 +62,9 @@ const getLoanAccountDetails = async (userId) => {
   return result.rows[0];
 };
 
-const deductAmountFromLoanAccount = async (accountNumber, amount) => {
-  const result = await pool.query(
-    `UPDATE loan_account
-              SET amount = amount - $1
-              WHERE "accountNumber" = $2`,
-    [amount, accountNumber],
-  );
-  return result;
-};
-
 module.exports = {
-  insertIntoLoanAccounts,
   loanAccountStatus,
   getLoanAccountDetails,
-  deductAmountFromLoanAccount,
   fetchActiveLoanAccounts,
   getLastInterestAddedDates,
   fetchActiveLoanAccountsFromAccountNumber,

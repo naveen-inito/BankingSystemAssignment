@@ -124,4 +124,13 @@ describe('Testing transaction api', () => {
     }).set('Authorization', `Bearer ${token1}`);
     expect(response.status).toBe(200);
   });
+  it('Test to get passbook of user', async () => {
+    request = supertest(app);
+    const response = await request.get('/api/passbook').send({
+      account_type: 'SAVINGS',
+      page: 1,
+      size: 6,
+    }).set('Authorization', `Bearer ${token1}`);
+    expect(response.status).toBe(200);
+  });
 });

@@ -58,8 +58,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Install nodejs migrate
-        run: npm install node-pg-migrate pg
+      # - name: Install nodejs migrate
+      #   run: npm install node-pg-migrate pg
 
       # - name: migrate database
       #   run: node migrate.js

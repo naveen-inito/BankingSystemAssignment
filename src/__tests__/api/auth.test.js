@@ -77,12 +77,6 @@ describe('Testing signup (passing invalid fields)', () => {
   });
   afterAll(async () => {
     (await client).release();
-    // await pool.query('DELETE FROM transaction');
-    // await pool.query('DELETE FROM loan_account');
-    // await pool.query('DELETE FROM atm_card');
-    // await pool.query('DELETE FROM accounts');
-    // await pool.query('DELETE FROM users');
-    // pool.end();
   });
 
   it('User should not be created', async () => {

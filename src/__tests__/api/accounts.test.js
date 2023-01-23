@@ -27,14 +27,6 @@ describe('Testing Savings account creation', () => {
     // app.close();
   });
 
-//   it('User should be created', async () => {
-//     request = supertest(app);
-//     const response = await request.get('/api/test').send();
-//     console.log(response.body)
-//     expect(response.body.success).toBe(true);
-//     expect(1).toBe(1);
-//   });
-
   it('User should be created', async () => {
     request = supertest(app);
     const response = await request.post('/api/signup').send({
@@ -70,6 +62,17 @@ describe('Testing Savings account creation', () => {
     expect(response.status).toBe(200);
     expect(response.body.status).toBe(false);
     expect(response.body.message).toBe('Invalid data entered');
+  });
+
+  it('User\'s savings account should not be created (passing wrong token)', async () => {
+    request = supertest(app);
+    const token1 = 'kosdn';
+    const response = await request.post('/api/account').send({
+      amount: '5000',
+      account_type: 'SAVINGS',
+    }).set('Authorization', `Bearer ${token1}`);
+    expect(response.status).toBe(400);
+    expect(response.body.auth_error).toBe('Authentication failed.');
   });
 
   it('User\'s savings account should not be created (amount is lesser)', async () => {
