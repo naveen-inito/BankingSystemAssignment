@@ -3,15 +3,15 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/services/transactionServices.js</title>
+    <title>Code coverage report for models/transactionModel.js</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="../../prettify.css" />
-    <link rel="stylesheet" href="../../base.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="../../favicon.png" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style type='text/css'>
         .coverage-summary .sorter {
-            background-image: url(../../sort-arrow-sprite.png);
+            background-image: url(../sort-arrow-sprite.png);
         }
     </style>
 </head>
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/services</a> transactionServices.js</h1>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">models</a> transactionModel.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">85.71% </span>
+                <span class="strong">58.16% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>180/210</span>
+                <span class='fraction'>89/153</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">63.63% </span>
+                <span class="strong">42.85% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>49/77</span>
+                <span class='fraction'>21/49</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">57.14% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>14/14</span>
+                <span class='fraction'>8/14</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">85.64% </span>
+                <span class="strong">65.92% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>173/202</span>
+                <span class='fraction'>89/135</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line medium'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -466,300 +466,176 @@
 <a name='L401'></a><a href='#L401'>401</a>
 <a name='L402'></a><a href='#L402'>402</a>
 <a name='L403'></a><a href='#L403'>403</a>
-<a name='L404'></a><a href='#L404'>404</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L404'></a><a href='#L404'>404</a>
+<a name='L405'></a><a href='#L405'>405</a>
+<a name='L406'></a><a href='#L406'>406</a>
+<a name='L407'></a><a href='#L407'>407</a>
+<a name='L408'></a><a href='#L408'>408</a>
+<a name='L409'></a><a href='#L409'>409</a>
+<a name='L410'></a><a href='#L410'>410</a>
+<a name='L411'></a><a href='#L411'>411</a>
+<a name='L412'></a><a href='#L412'>412</a>
+<a name='L413'></a><a href='#L413'>413</a>
+<a name='L414'></a><a href='#L414'>414</a>
+<a name='L415'></a><a href='#L415'>415</a>
+<a name='L416'></a><a href='#L416'>416</a>
+<a name='L417'></a><a href='#L417'>417</a>
+<a name='L418'></a><a href='#L418'>418</a>
+<a name='L419'></a><a href='#L419'>419</a>
+<a name='L420'></a><a href='#L420'>420</a>
+<a name='L421'></a><a href='#L421'>421</a>
+<a name='L422'></a><a href='#L422'>422</a>
+<a name='L423'></a><a href='#L423'>423</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">80x</span>
-<span class="cline-any cline-yes">80x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">48x</span>
-<span class="cline-any cline-yes">48x</span>
-<span class="cline-any cline-yes">48x</span>
-<span class="cline-any cline-yes">96x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">48x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">20x</span>
-<span class="cline-any cline-yes">20x</span>
-<span class="cline-any cline-yes">20x</span>
-<span class="cline-any cline-yes">20x</span>
-<span class="cline-any cline-yes">20x</span>
-<span class="cline-any cline-yes">20x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">18x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">18x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">48x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">24x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">182x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">12x</span>
-<span class="cline-any cline-yes">12x</span>
-<span class="cline-any cline-yes">12x</span>
-<span class="cline-any cline-yes">12x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">12x</span>
-<span class="cline-any cline-yes">12x</span>
-<span class="cline-any cline-yes">12x</span>
-<span class="cline-any cline-yes">12x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">12x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">15x</span>
-<span class="cline-any cline-yes">15x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">15x</span>
-<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">15x</span>
-<span class="cline-any cline-yes">15x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">15x</span>
-<span class="cline-any cline-yes">15x</span>
-<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -769,91 +645,253 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">15x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">40x</span>
-<span class="cline-any cline-yes">24x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">24x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">20x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -869,408 +907,427 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/* eslint-disable prefer-const */
-/* eslint-disable no-param-reassign */
-/* eslint-disable no-await-in-loop */
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/* eslint-disable no-param-reassign */
 /* eslint-disable max-len */
-const { deductFromBalance, fetchAccountDetailsFromIdAndType } = require('../models/accountsModel');
-const { getLoanAccountDetails } = require('../models/loanAccountModel');
-const {
-  getSumOfAmountFromAccountNoAndTransactionType, fetchParticularMonthTransactionCountOfAccount, fetchParticularDayWithdrawAmount, fetchParticularMonthAtmWithdrawCount, fetchParticularMonthTransactions, fetchLoanTransactions, transferMoney, withdrawFromAtm, withdrawFromBank, loanRepayment, depositMoney,
-} = require('../models/transactionModel');
-const {
-  TRANSACTION_TYPES, ACCOUNT_TYPES, TRANSACTION_CHARGE_RATE, MAXIMUM_DAILY_WITHDRAW_AMOUNT, ONE_TIME_WITHDRAW_LIMIT, MAXIMUM_TRANSACTION_CHARGE_AMOUNT,
-} = require('../utils/constants');
-const {
-  getNumberOfDays, generateTransactionNumber, getUserId, formatDate,
-} = require('../utils/utils');
-const { verifyCardDetails } = require('./atmServices');
+const { pool } = require('../db/connection');
+const { TRANSACTION_TYPES, LOAN_STATUS } = require('../utils/constants');
+const { formatDate } = require('../utils/utils');
 &nbsp;
-const getTransactionCountForAccount = async (accountNumber, formattedDate) =&gt; {
-  const d = new Date(formattedDate);
-  const month = `${d.getMonth() + 1}`;
-  const year = d.getFullYear();
-  const result = await fetchParticularMonthTransactionCountOfAccount(accountNumber, month, year);
+const fetchAllTransactionOfAccount = <span class="fstat-no" title="function not covered" >as</span>ync (accountNumber, page = <span class="branch-0 cbranch-no" title="branch not covered" >1,</span> size = <span class="branch-0 cbranch-no" title="branch not covered" >50)</span> =&gt; {
+  const result = <span class="cstat-no" title="statement not covered" >await pool.query(</span>
+    `SELECT * from transaction
+          where "accountNo" = $1
+          ORDER BY "dateOfTransaction" DESC
+          LIMIT $2
+          OFFSET $3`,
+    [accountNumber, size, (page - 1) * size],
+  );
+<span class="cstat-no" title="statement not covered" >  return result;</span>
+};
+&nbsp;
+const getSumOfAmountFromAccountNoAndTransactionType = async (accountNumber, transactionType) =&gt; {
+  const result = await pool.query(
+    `SELECT SUM(amount) FROM transaction WHERE
+              "accountNo" = $1 AND "transactionType" = $2`,
+    [accountNumber, transactionType],
+  );
+  return result.rows[0].sum;
+};
+&nbsp;
+const fetchParticularMonthTransactionCountOfAccount = <span class="fstat-no" title="function not covered" >as</span>ync (accountNumber, month, year) =&gt; {
+  const result = <span class="cstat-no" title="statement not covered" >await pool.query(</span>
+    `SELECT COUNT(*)
+                FROM transaction
+                WHERE "accountNo" = $1
+                AND EXTRACT(MONTH FROM "dateOfTransaction") = $2 AND EXTRACT(YEAR FROM "dateOfTransaction") = $3
+                GROUP BY "transactionNumber"`,
+    [accountNumber, month, year],
+  );
+<span class="cstat-no" title="statement not covered" >  return result.rowCount;</span>
+};
+&nbsp;
+const fetchParticularDayWithdrawAmount = async (accountNumber, day, month, year) =&gt; {
+  const result = await pool.query(
+    `SELECT SUM(amount) FROM transaction WHERE
+              "accountNo" = $1 AND ( "transactionType" = $2 OR "transactionType" = $3 ) AND
+              EXTRACT(DAY FROM "dateOfTransaction") = $4 AND
+              EXTRACT(MONTH FROM "dateOfTransaction") = $5 AND
+              EXTRACT(YEAR FROM "dateOfTransaction") = $6`,
+    [accountNumber, TRANSACTION_TYPES.WITHDRAW_FROM_ATM, TRANSACTION_TYPES.WITHDRAW_FROM_BANK, day, month, year],
+  );
   return result;
 };
 &nbsp;
-const getUserAccountDetailsOfParticularType = async (userId, accountType) =&gt; {
-  const result = await fetchAccountDetailsFromIdAndType(userId, accountType);
-  return result;
+const fetchParticularMonthAtmWithdrawCount = async (accountNumber, month, year) =&gt; {
+  const result = await pool.query(
+    `SELECT COUNT(*) FROM transaction WHERE
+              "accountNo" = $1 AND "transactionType" = $2 AND
+              EXTRACT(MONTH FROM "dateOfTransaction") = $3 AND
+              EXTRACT(YEAR FROM "dateOfTransaction") = $4
+              GROUP BY "transactionNumber"`,
+    [accountNumber, TRANSACTION_TYPES.WITHDRAW_FROM_ATM, month, year],
+  );
+  return result.rowCount;
 };
 &nbsp;
-const getTotalDepositsOfUser = (userRows) =&gt; {
-  const len = userRows.length;
-  let totalSum = 0;
-  for (let rowIterator = 0; rowIterator &lt; len; rowIterator += 1) {
-    totalSum += userRows[rowIterator].balance;
-  }
-  return totalSum;
+const fetchParticularMonthTransactions = <span class="fstat-no" title="function not covered" >as</span>ync (accountNumber, month, year) =&gt; {
+  const result = <span class="cstat-no" title="statement not covered" >await pool.query(</span>
+    `SELECT * FROM transaction
+              WHERE "accountNo" = $1
+              AND EXTRACT(MONTH FROM "dateOfTransaction") = $2
+              AND EXTRACT(YEAR FROM "dateOfTransaction") = $3
+              ORDER BY "dateOfTransaction" ASC`,
+    [accountNumber, month, year],
+  );
+<span class="cstat-no" title="statement not covered" >  return result;</span>
 };
 &nbsp;
-const subtractMoney = async (accountNumber, amount, accountType) =&gt; {
-  const result = await deductFromBalance(amount, accountNumber, accountType);
-  return result;
+const fetchLoanTransactions = <span class="fstat-no" title="function not covered" >as</span>ync (accountNumber, startDate, endDate) =&gt; {
+<span class="cstat-no" title="statement not covered" >  startDate = formatDate(startDate);</span>
+<span class="cstat-no" title="statement not covered" >  endDate = formatDate(endDate);</span>
+  const result = <span class="cstat-no" title="statement not covered" >await pool.query(</span>
+    `SELECT * FROM transaction
+              WHERE "accountNo" = $1
+              AND "dateOfTransaction" &gt;= $2
+              AND "dateOfTransaction" &lt;= $3
+              ORDER BY "dateOfTransaction" ASC`,
+    [accountNumber, startDate, endDate],
+  );
+<span class="cstat-no" title="statement not covered" >  return result;</span>
 };
 &nbsp;
-const getCurrentDayWithdrawalAmount = async (accountNumber) =&gt; {
-  const d = new Date(Date.now());
-  const month = `${d.getMonth() + 1}`;
-  const day = `${d.getDate()}`;
-  const year = d.getFullYear();
-  const result = await fetchParticularDayWithdrawAmount(accountNumber, day, month, year);
-  return result;
-};
-&nbsp;
-const getCurrentMonthAtmWithdrawCount = async (accountNumber) =&gt; {
-  const d = new Date(Date.now());
-  const month = `${d.getMonth() + 1}`;
-  const year = d.getFullYear();
-  const result = await fetchParticularMonthAtmWithdrawCount(accountNumber, month, year);
-  return result;
-};
-&nbsp;
-const getMinBalance = async (month, year, accountNumber, balance, numberOfDays) =&gt; {
-  const result = await fetchParticularMonthTransactions(accountNumber, month, year);
-&nbsp;
-  const allTransactions = result.rows;
-  const transactionCount = allTransactions.length;
-&nbsp;
-  const startDay = new Array(numberOfDays + 1);
-  const finalAmountOfDay = new Array(numberOfDays + 1);
-&nbsp;
-  // We need to also handle the case when there are no transactions for the given "accountNumber"
-  if (transactionCount === 0) {
-    // Now, we need to just get the balance of the "accountNumber"
-    // And, we can simply put that balance in whole array and return it
-    for (let dayIterator = 1; dayIterator &lt;= numberOfDays; dayIterator += 1) {
-      finalAmountOfDay[dayIterator] = balance;
-    }
-    return finalAmountOfDay;
-  }
-&nbsp;
-  for (let transactionIterator = 0; transactionIterator &lt; transactionCount; transactionIterator += 1) {
-    const currentTransaction = allTransactions[transactionIterator];
-    const currentDate = currentTransaction.dateOfTransaction;
-    const Day = currentDate.getDate();
-&nbsp;
-    if (startDay[Day] === undefined) {
-      startDay[Day] = currentTransaction.amountBeforeTransaction;
-    }
-    const amountAfterTransaction = currentTransaction.amountBeforeTransaction + currentTransaction.amount;
-    finalAmountOfDay[Day] = amountAfterTransaction;
-  }
-&nbsp;
-  for (let dayIterator = 1; dayIterator &lt;= numberOfDays; dayIterator += 1) {
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (finalAmountOfDay[dayIterator] !== undefined) {
-      // go back until we find null
-      let dayIteratorSecondPtr = <span class="cstat-no" title="statement not covered" >dayIterator - 1;</span>
-<span class="cstat-no" title="statement not covered" >      while (dayIteratorSecondPtr &gt; 0 &amp;&amp; (finalAmountOfDay[dayIteratorSecondPtr] === undefined || finalAmountOfDay[dayIteratorSecondPtr] === null)) {</span>
-<span class="cstat-no" title="statement not covered" >        finalAmountOfDay[dayIteratorSecondPtr] = startDay[dayIterator];</span>
-<span class="cstat-no" title="statement not covered" >        dayIteratorSecondPtr -= 1;</span>
-      }
-&nbsp;
-      // go to front until we find null
-<span class="cstat-no" title="statement not covered" >      dayIteratorSecondPtr = dayIterator + 1;</span>
-<span class="cstat-no" title="statement not covered" >      while (dayIteratorSecondPtr &lt;= numberOfDays &amp;&amp; (finalAmountOfDay[dayIteratorSecondPtr] === undefined || finalAmountOfDay[dayIteratorSecondPtr] === null)) {</span>
-<span class="cstat-no" title="statement not covered" >        finalAmountOfDay[dayIteratorSecondPtr] = finalAmountOfDay[dayIterator];</span>
-<span class="cstat-no" title="statement not covered" >        dayIteratorSecondPtr += 1;</span>
-      }
-    }
-  }
-  return finalAmountOfDay;
-};
-&nbsp;
-const getMinBalanceOfLoanAccount = async (startDate, endDate, numberOfDays, accountNumber, balance) =&gt; {
-  const result = await fetchLoanTransactions(accountNumber, startDate, endDate);
-  const allTransactions = result.rows;
-  const transactionCount = allTransactions.length;
-&nbsp;
-  const noOfDays = numberOfDays;
-  const startDay = new Array(noOfDays + 1);
-  const finalAmountOfDay = new Array(noOfDays + 1);
-&nbsp;
-  // We need to also handle the case when there are no transactions for the given "accountNumber"
-  <span class="missing-if-branch" title="if path not taken" >I</span>if (transactionCount === 0) {
-    // Now, we need to just get the balance of the "accountNumber"
-    // And, we can simply put that balance in whole array and return it
-<span class="cstat-no" title="statement not covered" >    for (let dayIterator = <span class="cstat-no" title="statement not covered" >1;</span> dayIterator &lt;= noOfDays; dayIterator += 1) {</span>
-<span class="cstat-no" title="statement not covered" >      finalAmountOfDay[dayIterator] = balance;</span>
-    }
-<span class="cstat-no" title="statement not covered" >    return finalAmountOfDay;</span>
-  }
-&nbsp;
-  for (let transactionIterator = 0; transactionIterator &lt; transactionCount; transactionIterator += 1) {
-    const currentTransaction = allTransactions[transactionIterator];
-&nbsp;
-    const currentDate = currentTransaction.dateOfTransaction;
-&nbsp;
-    // const Day = await getNumberOfDays(startDate, currentDate);
-    const Day = getNumberOfDays(startDate, currentDate);
-&nbsp;
-    <span class="missing-if-branch" title="else path not taken" >E</span>if (startDay[Day] === undefined) {
-      startDay[Day] = currentTransaction.amountBeforeTransaction;
-    }
-    const amountAfterTransaction = currentTransaction.amountBeforeTransaction + currentTransaction.amount;
-    finalAmountOfDay[Day] = amountAfterTransaction;
-  }
-&nbsp;
-  for (let dayIterator = 1; dayIterator &lt;= noOfDays; dayIterator += 1) {
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (finalAmountOfDay[dayIterator] !== undefined) {
-      // go back until we find null
-      let dayIteratorSecondPtr = <span class="cstat-no" title="statement not covered" >dayIterator - 1;</span>
-<span class="cstat-no" title="statement not covered" >      while (dayIteratorSecondPtr &gt; 0 &amp;&amp; (finalAmountOfDay[dayIteratorSecondPtr] === undefined || finalAmountOfDay[dayIteratorSecondPtr] == null)) {</span>
-<span class="cstat-no" title="statement not covered" >        finalAmountOfDay[dayIteratorSecondPtr] = startDay[dayIterator];</span>
-<span class="cstat-no" title="statement not covered" >        dayIteratorSecondPtr -= 1;</span>
-      }
-&nbsp;
-      // go to front until we find null
-<span class="cstat-no" title="statement not covered" >      dayIteratorSecondPtr = dayIterator + 1;</span>
-<span class="cstat-no" title="statement not covered" >      while (dayIteratorSecondPtr &lt;= noOfDays &amp;&amp; (finalAmountOfDay[dayIteratorSecondPtr] === undefined || finalAmountOfDay[dayIteratorSecondPtr] == null)) {</span>
-<span class="cstat-no" title="statement not covered" >        finalAmountOfDay[dayIteratorSecondPtr] = finalAmountOfDay[dayIterator];</span>
-<span class="cstat-no" title="statement not covered" >        dayIteratorSecondPtr += 1;</span>
-      }
-    }
-  }
-  return finalAmountOfDay;
-};
-&nbsp;
-const loanRepaymentService = async ({ id, amount }) =&gt; {
-  // If receiver does not have "LOAN" account..
-  const account = await getLoanAccountDetails(id);
-  <span class="missing-if-branch" title="if path not taken" >I</span>if (!account) {
-<span class="cstat-no" title="statement not covered" >    return { status: false, message: 'User account does not exist' };</span>
-  }
-&nbsp;
-  // Checking whether the repay amount is not excedding 10% of total loan amount
-  const totalLoanAmount = account.amount;
-  if (amount &gt; 0.1 * totalLoanAmount) {
-    return { status: false, message: 'Loan repayment amount excedded' };
-  }
-&nbsp;
-  // Checking whether the repay amount is not excedding the remaining loan amount
-  let loanAmountRepayed = await getSumOfAmountFromAccountNoAndTransactionType(account.accountNumber, TRANSACTION_TYPES.LOAN_REPAYMENT); // It will be negative
-  if (loanAmountRepayed == null) { loanAmountRepayed = 0; }
-  const remainingAmountToPay = parseInt(parseInt(totalLoanAmount, 10) + parseInt(loanAmountRepayed, 10), 10);
-  <span class="missing-if-branch" title="if path not taken" >I</span>if (amount &gt; remainingAmountToPay) {
-<span class="cstat-no" title="statement not covered" >    return { status: false, message: 'Loan repayment amount excedded' };</span>
-  }
-&nbsp;
-  const transactionType = TRANSACTION_TYPES.LOAN_REPAYMENT;
-  const accountType = ACCOUNT_TYPES.LOAN;
-  const senderTransactionNumber = generateTransactionNumber();
-  const loanRepaymentResponse = await loanRepayment({
-    accountNumber: account.accountNumber,
-    transactionType,
-    amount,
-    remainingAmountToPay,
-    accountType,
-    senderTransactionNumber,
-  });
-  return loanRepaymentResponse;
-};
-&nbsp;
-const depositMoneyService = async ({ id, accountType, amount }) =&gt; {
-  const account = await getUserAccountDetailsOfParticularType(id, accountType);
-&nbsp;
-  // console.log(accountDetails)
-  <span class="missing-if-branch" title="if path not taken" >I</span>if (!account) {
-<span class="cstat-no" title="statement not covered" >    return { status: false, message: 'Receiver\'s accounts does not exist' };</span>
-  }
-  const receiverTransactionNumber = generateTransactionNumber();
-  const amountBeforeTransaction = account.balance;
-  const transactionType = TRANSACTION_TYPES.DEPOSIT;
-&nbsp;
-  // If account is "CURRENT", then we need to put transaction charge of 0.5% of amount
-  const transactionCharge = Math.min((amount / 100) * TRANSACTION_CHARGE_RATE, MAXIMUM_TRANSACTION_CHARGE_AMOUNT);
-&nbsp;
-  const depositMoneyResponse = await depositMoney({
-    accountNumber: account.accountNumber,
-    transactionCharge,
-    transactionType,
-    accountType,
-    amount,
-    finalAmount: amount - transactionCharge,
-    receiverTransactionNumber,
-    amountBeforeTransaction,
-  });
-  return depositMoneyResponse;
-};
-&nbsp;
-const withdrawFromBankService = async (req) =&gt; {
-  const { id, amount, accountType } = req;
-  const account = await getUserAccountDetailsOfParticularType(id, accountType);
-&nbsp;
-  <span class="missing-if-branch" title="if path not taken" >I</span>if (!account) {
-<span class="cstat-no" title="statement not covered" >    return { status: false, message: 'Account does not exist' };</span>
-  }
-  if (account.balance &lt; amount || (accountType === ACCOUNT_TYPES.SAVINGS &amp;&amp; amount &gt; ONE_TIME_WITHDRAW_LIMIT)) {
-    return { status: false, message: 'Amount excedded' };
-  }
-&nbsp;
-  const currentDayWithdrawalAmountResult = await getCurrentDayWithdrawalAmount(account.accountNumber);
-  const currentDayWithdrawalAmount = currentDayWithdrawalAmountResult.rows[0].sum;
-  const totalAmount = parseInt(-1 * currentDayWithdrawalAmount, 10) + parseInt(amount, 10);
-  <span class="missing-if-branch" title="if path not taken" >I</span>if (totalAmount &gt; MAXIMUM_DAILY_WITHDRAW_AMOUNT) {
-<span class="cstat-no" title="statement not covered" >    return { status: false, message: 'Money withdrawal amount limit excedded' };</span>
-  }
-&nbsp;
-  const amountBeforeTransaction = account.balance;
-  const senderTransactionNumber = generateTransactionNumber();
-  const transactionType = TRANSACTION_TYPES.WITHDRAW_FROM_BANK;
-  const withdrawFromBankResponse = await withdrawFromBank({
-    accountNumber: account.accountNumber,
-    amount,
-    accountType,
-    transactionType,
-    amountBeforeTransaction,
-    senderTransactionNumber,
-  });
-  return withdrawFromBankResponse;
-};
-&nbsp;
-const withdrawFromAtmService = async (req) =&gt; {
-  const {
-    id, amount, accountType, cardNumber, cvv,
-  } = req;
-&nbsp;
-  const account = await getUserAccountDetailsOfParticularType(id, accountType);
-  <span class="missing-if-branch" title="if path not taken" >I</span>if (!account) {
-<span class="cstat-no" title="statement not covered" >    return { status: false, message: 'Account does not exist' };</span>
-  }
-&nbsp;
-  const cardVerified = await verifyCardDetails(account.accountNumber, cardNumber, cvv);
-  <span class="missing-if-branch" title="if path not taken" >I</span>if (!cardVerified) {
-<span class="cstat-no" title="statement not covered" >    return { status: false, message: 'Invalid Details' };</span>
-  }
-&nbsp;
-  if (account.balance &lt; amount || amount &gt; ONE_TIME_WITHDRAW_LIMIT) {
-    return { status: false, message: 'Amount excedded' };
-  }
-&nbsp;
-  const currentDayWithdrawalAmountResult = await getCurrentDayWithdrawalAmount(account.accountNumber);
-  const currentDayWithdrawalAmount = currentDayWithdrawalAmountResult.rows[0].sum;
-&nbsp;
-  const totalAmount = parseInt(-1 * currentDayWithdrawalAmount, 10) + parseInt(amount, 10);
-  <span class="missing-if-branch" title="if path not taken" >I</span>if (totalAmount &gt; MAXIMUM_DAILY_WITHDRAW_AMOUNT) {
-<span class="cstat-no" title="statement not covered" >    return { status: false, message: 'Money withdrawal amount limit excedded' };</span>
-  }
-&nbsp;
-  // Checking whether total monthly withdraw by atm does not exceed by 5 for a month
-  const currentMonthWithdrawCount = await getCurrentMonthAtmWithdrawCount(account.accountNumber);
-  let amountBeforeTransaction = account.balance;
-&nbsp;
-  const senderTransactionNumber = generateTransactionNumber();
-  const transactionType = TRANSACTION_TYPES.WITHDRAW_FROM_ATM;
-  const withdrawFromAtmResponse = await withdrawFromAtm({
-    accountNumber: account.accountNumber,
-    amount,
-    accountType,
-    transactionType,
-    amountBeforeTransaction,
-    senderTransactionNumber,
-    currentMonthWithdrawCount,
-  });
-  return withdrawFromAtmResponse;
-};
-&nbsp;
-const transferMoneyService = async (req) =&gt; {
-  const { id, receiverUsername, amount } = req;
-&nbsp;
-  const senderUserId = id;
-  const senderAccount = await getUserAccountDetailsOfParticularType(senderUserId, ACCOUNT_TYPES.CURRENT);
-&nbsp;
-  const receiverUserId = getUserId(receiverUsername);
-  const receiverAccount = await getUserAccountDetailsOfParticularType(receiverUserId, ACCOUNT_TYPES.CURRENT);
-&nbsp;
-  if (!senderAccount) {
-    return { status: false, message: 'Current Account does not exist' };
-  }
-  if (!receiverAccount) {
-    return { status: false, message: 'Receiver\'s Current Account does not exist' };
-  }
-&nbsp;
-  // If account is "CURRENT", then we need to put transaction charge of 0.5% of amount
-  const transactionCharge = Math.min((amount / 100) * TRANSACTION_CHARGE_RATE, MAXIMUM_TRANSACTION_CHARGE_AMOUNT);
-  <span class="missing-if-branch" title="if path not taken" >I</span>if ((senderAccount.balance - transactionCharge) &lt;= amount) {
-<span class="cstat-no" title="statement not covered" >    return { status: false, message: 'Amount excedded' };</span>
-  }
-&nbsp;
-  const senderBeforeTransactionAmount = senderAccount.balance - transactionCharge;
-  const receiverBeforeTransactionAmount = receiverAccount.balance;
-&nbsp;
-  const senderTransactionNumber = generateTransactionNumber();
-  const receiverTransactionNumber = generateTransactionNumber();
-  const transferMoneyResponse = await transferMoney({
-    senderAccountNumber: senderAccount.accountNumber,
-    receiverAccountNumber: receiverAccount.accountNumber,
-    amount,
-    accountType: ACCOUNT_TYPES.CURRENT,
-    transactionType: TRANSACTION_TYPES.TRANSFER,
-    transactionCharge,
-    senderBeforeTransactionAmount,
-    receiverBeforeTransactionAmount,
-    senderTransactionNumber,
-    receiverTransactionNumber,
-  });
-  return transferMoneyResponse;
-};
-&nbsp;
-const handleTransactions = async ({
-  id, amount, accountType, cardNumber, cvv, receiverUsername,
+const transferMoney = async ({
+  senderAccountNumber, receiverAccountNumber, amount, accountType, transactionType, transactionCharge,
+  senderBeforeTransactionAmount,
+  receiverBeforeTransactionAmount,
+  senderTransactionNumber,
+  receiverTransactionNumber,
 }) =&gt; {
-  if (amount &lt; 0) {
-    amount *= -1;
-    // It could be transfer or withdraw from bank or withdraw from atm
-    if (receiverUsername) {
-      // It is money transfer
-      const transferMoneyServiceResponse = await transferMoneyService({ id, amount, receiverUsername });
-      return transferMoneyServiceResponse;
+  let client;
+  try {
+    client = await pool.connect();
+    await client.query('BEGIN');
+    const deductBalanceQuery = await client.query(
+      `UPDATE accounts
+              SET balance = balance - $1
+              WHERE "accountNumber" = $2 AND "accountType" = $3`,
+      [amount, senderAccountNumber, accountType],
+    );
+&nbsp;
+    const addBalanceQuery = await client.query(
+      `UPDATE accounts
+              SET balance = balance + $1
+              WHERE "accountNumber" = $2 AND "accountType" = $3`,
+      [amount, receiverAccountNumber, accountType],
+    );
+&nbsp;
+    const deductTransactionChargeQuery = await client.query(
+      `UPDATE accounts
+              SET balance = balance - $1
+              WHERE "accountNumber" = $2 AND "accountType" = $3`,
+      [transactionCharge, senderAccountNumber, accountType],
+    );
+&nbsp;
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (deductBalanceQuery.rowCount === 0 || addBalanceQuery.rowCount === 0 || deductTransactionChargeQuery.rowCount === 0) { <span class="cstat-no" title="statement not covered" >throw new Error(); </span>}
+&nbsp;
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (senderAccountNumber != null) {
+    // Now, we need to add transaction for the SENDER
+      const result = await client.query(
+        'INSERT INTO transaction ("transactionNumber", "transactionType", "accountNo", "amount", "amountBeforeTransaction") values($1,$2,$3,$4,$5)',
+        [senderTransactionNumber, transactionType, senderAccountNumber, -1 * amount, senderBeforeTransactionAmount],
+      );
+      <span class="missing-if-branch" title="if path not taken" >I</span>if (result.rowCount === 0) { <span class="cstat-no" title="statement not covered" >throw new Error(); </span>}
     }
-    if (cardNumber &amp;&amp; cvv) {
-      // It is withdraw from atm
-      accountType = ACCOUNT_TYPES.SAVINGS;
-      const withdrawFromAtmServiceResponse = await withdrawFromAtmService({
-        id, amount, cardNumber, cvv, accountType,
-      });
-      return withdrawFromAtmServiceResponse;
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (receiverAccountNumber != null) {
+    // Now, we need to add transaction for the RECEIVER
+      const result = await client.query(
+        'INSERT INTO transaction ("transactionNumber", "transactionType", "accountNo", "amount", "amountBeforeTransaction") values($1,$2,$3,$4,$5)',
+        [receiverTransactionNumber, transactionType, receiverAccountNumber, amount, receiverBeforeTransactionAmount],
+      );
+      <span class="missing-if-branch" title="if path not taken" >I</span>if (result.rowCount === 0) { <span class="cstat-no" title="statement not covered" >throw new Error(); </span>}
     }
-    <span class="missing-if-branch" title="else path not taken" >E</span>if (accountType) {
-      // It is withdraw from bank
-      const withdrawFromBankServiceResponse = await withdrawFromBankService({ id, amount, accountType });
-      return withdrawFromBankServiceResponse;
-    }
+    await client.query('COMMIT');
+    return { status: true, message: 'Money transferred' };
+  } catch (e) {
+<span class="cstat-no" title="statement not covered" >    await client.query('ROLLBACK');</span>
+<span class="cstat-no" title="statement not covered" >    return { status: false, message: 'Money could not be transferred' };</span>
+  } finally {
+    client.release();
   }
-  <span class="missing-if-branch" title="else path not taken" >E</span>if (amount &gt; 0) {
-    // It could be deposit or loan repayment
-    if (accountType === ACCOUNT_TYPES.LOAN) {
-      // It is loan repayment
-      const loanRepaymentResponse = await loanRepaymentService({ id, amount, accountType });
-      return loanRepaymentResponse;
+};
+&nbsp;
+const withdrawFromAtm = async ({
+  accountNumber,
+  amount,
+  accountType,
+  transactionType,
+  amountBeforeTransaction,
+  senderTransactionNumber,
+  currentMonthWithdrawCount,
+}) =&gt; {
+  let client;
+  try {
+    client = await pool.connect();
+    await client.query('BEGIN');
+&nbsp;
+    if (currentMonthWithdrawCount &gt;= 5) {
+      // Now, charge 500 for each withdraw
+      const penaltyForLimit = await client.query(
+        `UPDATE accounts
+                SET balance = balance - $1
+                WHERE "accountNumber" = $2 AND "accountType" = $3`,
+        [500, accountNumber, accountType],
+      );
+      <span class="missing-if-branch" title="if path not taken" >I</span>if (penaltyForLimit.rowCount === 0) { <span class="cstat-no" title="statement not covered" >throw new Error(); </span>}
+      amountBeforeTransaction -= 500;
     }
-    <span class="missing-if-branch" title="else path not taken" >E</span>if (accountType &amp;&amp; amount) {
-      const depositMoneyResponse = await depositMoneyService({ id, amount, accountType });
-      return depositMoneyResponse;
-    }
+&nbsp;
+    const deductBalanceQuery = await client.query(
+      `UPDATE accounts
+              SET balance = balance - $1
+              WHERE "accountNumber" = $2 AND "accountType" = $3`,
+      [amount, accountNumber, accountType],
+    );
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (deductBalanceQuery.rowCount === 0) { <span class="cstat-no" title="statement not covered" >throw new Error(); </span>}
+&nbsp;
+    const result = await client.query(
+      'INSERT INTO transaction ("transactionNumber", "transactionType", "accountNo", "amount", "amountBeforeTransaction") values($1,$2,$3,$4,$5)',
+      [senderTransactionNumber, transactionType, accountNumber, -1 * amount, amountBeforeTransaction],
+    );
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (result.rowCount === 0) { <span class="cstat-no" title="statement not covered" >throw new Error(); </span>}
+&nbsp;
+    await client.query('COMMIT');
+    return { status: true, message: 'Money withdrawn from ATM' };
+  } catch (e) {
+<span class="cstat-no" title="statement not covered" >    await client.query('ROLLBACK');</span>
+<span class="cstat-no" title="statement not covered" >    return { status: false, message: 'Money could not be withdrawn from ATM' };</span>
+  } finally {
+    client.release();
   }
-<span class="cstat-no" title="statement not covered" >  return { status: false, message: 'Transaction could not be done' };</span>
+};
+&nbsp;
+const withdrawFromBank = async ({
+  accountNumber,
+  amount,
+  accountType,
+  transactionType,
+  amountBeforeTransaction,
+  senderTransactionNumber,
+}) =&gt; {
+  let client;
+  try {
+    amount = parseInt(amount, 10);
+    client = await pool.connect();
+    await client.query('BEGIN');
+&nbsp;
+    const deductBalanceQuery = await client.query(
+      `UPDATE accounts
+              SET balance = balance - $1
+              WHERE "accountNumber" = $2 AND "accountType" = $3`,
+      [amount, accountNumber, accountType],
+    );
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (deductBalanceQuery.rowCount === 0) { <span class="cstat-no" title="statement not covered" >throw new Error(); </span>}
+&nbsp;
+    const result = await client.query(
+      'INSERT INTO transaction ("transactionNumber", "transactionType", "accountNo", "amount", "amountBeforeTransaction") values($1,$2,$3,$4,$5)',
+      [senderTransactionNumber, transactionType, accountNumber, -1 * amount, amountBeforeTransaction],
+    );
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (result.rowCount === 0) { <span class="cstat-no" title="statement not covered" >throw new Error(); </span>}
+&nbsp;
+    await client.query('COMMIT');
+    return { status: true, message: 'Money withdrawn from Bank' };
+  } catch (e) {
+<span class="cstat-no" title="statement not covered" >    await client.query('ROLLBACK');</span>
+<span class="cstat-no" title="statement not covered" >    return { status: false, message: 'Money could not be withdrawn from Bank' };</span>
+  } finally {
+    client.release();
+  }
+};
+&nbsp;
+const loanRepayment = async ({
+  accountNumber,
+  transactionType,
+  amount,
+  remainingAmountToPay,
+  accountType,
+  senderTransactionNumber,
+}) =&gt; {
+  let client;
+  try {
+    client = await pool.connect();
+    await client.query('BEGIN');
+    amount = parseInt(amount, 10);
+&nbsp;
+    const deductBalanceQuery = await client.query(
+      `UPDATE accounts
+              SET balance = balance - $1
+              WHERE "accountNumber" = $2 AND "accountType" = $3`,
+      [amount, accountNumber, accountType],
+    );
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (deductBalanceQuery.rowCount === 0) { <span class="cstat-no" title="statement not covered" >throw new Error(); </span>}
+&nbsp;
+    const result = await client.query(
+      'INSERT INTO transaction ("transactionNumber", "transactionType", "accountNo", "amount", "amountBeforeTransaction") values($1,$2,$3,$4,$5)',
+      [senderTransactionNumber, transactionType, accountNumber, -1 * amount, remainingAmountToPay],
+    );
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (result.rowCount === 0) { <span class="cstat-no" title="statement not covered" >throw new Error(); </span>}
+&nbsp;
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (amount === remainingAmountToPay) {
+      const updateStatusResponse = <span class="cstat-no" title="statement not covered" >await client.query(</span>
+        `UPDATE loan_account
+                  set status = $1
+                  where "accountNumber" = $2`,
+        [LOAN_STATUS.INACTIVE, accountNumber],
+      );
+<span class="cstat-no" title="statement not covered" >      if (updateStatusResponse.rowCount === 0) { <span class="cstat-no" title="statement not covered" >throw new Error(); </span>}</span>
+    }
+&nbsp;
+    await client.query('COMMIT');
+    return { status: true, message: 'Loan amount paid successfully' };
+  } catch (e) {
+<span class="cstat-no" title="statement not covered" >    await client.query('ROLLBACK');</span>
+<span class="cstat-no" title="statement not covered" >    return { status: false, message: 'Loan amount couldn\'t be payed' };</span>
+  } finally {
+    client.release();
+  }
+};
+&nbsp;
+const depositMoney = async ({
+  accountNumber,
+  transactionCharge,
+  transactionType,
+  accountType,
+  amount,
+  finalAmount,
+  receiverTransactionNumber,
+  amountBeforeTransaction,
+}) =&gt; {
+  let client;
+  try {
+    client = await pool.connect();
+    await client.query('BEGIN');
+&nbsp;
+    const deductBalanceQuery = await client.query(
+      `UPDATE accounts
+              SET balance = balance - $1
+              WHERE "accountNumber" = $2 AND "accountType" = $3`,
+      [transactionCharge, accountNumber, accountType],
+    );
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (deductBalanceQuery.rowCount === 0) { <span class="cstat-no" title="statement not covered" >throw new Error(); </span>}
+&nbsp;
+    const addBalanceQuery = await client.query(
+      `UPDATE accounts
+              SET balance = balance + $1
+              WHERE "accountNumber" = $2 AND "accountType" = $3`,
+      [finalAmount, accountNumber, accountType],
+    );
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (addBalanceQuery.rowCount === 0) { <span class="cstat-no" title="statement not covered" >throw new Error(); </span>}
+&nbsp;
+    const result = await client.query(
+      'INSERT INTO transaction ("transactionNumber", "transactionType", "accountNo", "amount", "amountBeforeTransaction") values($1,$2,$3,$4,$5)',
+      [receiverTransactionNumber, transactionType, accountNumber, amount, amountBeforeTransaction],
+    );
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (result.rowCount === 0) { <span class="cstat-no" title="statement not covered" >throw new Error(); </span>}
+&nbsp;
+    await client.query('COMMIT');
+    return { status: true, message: 'Money added' };
+  } catch (e) {
+<span class="cstat-no" title="statement not covered" >    await client.query('ROLLBACK');</span>
+<span class="cstat-no" title="statement not covered" >    return { status: false, message: 'Money could not be added' };</span>
+  } finally {
+    client.release();
+  }
+};
+&nbsp;
+const addMoneyWithTransaction = <span class="fstat-no" title="function not covered" >as</span>ync ({
+  accountNumber,
+  amount,
+  accountType,
+  transactionType,
+  receiverTransactionNumber,
+  amountBeforeTransaction,
+}) =&gt; {
+  let client;
+<span class="cstat-no" title="statement not covered" >  try {</span>
+<span class="cstat-no" title="statement not covered" >    client = await pool.connect();</span>
+<span class="cstat-no" title="statement not covered" >    await client.query('BEGIN');</span>
+&nbsp;
+    const addBalanceQuery = <span class="cstat-no" title="statement not covered" >await client.query(</span>
+      `UPDATE accounts
+              SET balance = balance + $1
+              WHERE "accountNumber" = $2 AND "accountType" = $3`,
+      [amount, accountNumber, accountType],
+    );
+<span class="cstat-no" title="statement not covered" >    if (addBalanceQuery.rowCount === 0) { <span class="cstat-no" title="statement not covered" >throw new Error(); </span>}</span>
+&nbsp;
+    const result = <span class="cstat-no" title="statement not covered" >await client.query(</span>
+      'INSERT INTO transaction ("transactionNumber", "transactionType", "accountNo", "amount", "amountBeforeTransaction") values($1,$2,$3,$4,$5)',
+      [receiverTransactionNumber, transactionType, accountNumber, amount, amountBeforeTransaction],
+    );
+<span class="cstat-no" title="statement not covered" >    if (result.rowCount === 0) { <span class="cstat-no" title="statement not covered" >throw new Error(); </span>}</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    await client.query('COMMIT');</span>
+<span class="cstat-no" title="statement not covered" >    return { status: true, message: 'added money' };</span>
+  } catch (e) {
+<span class="cstat-no" title="statement not covered" >    await client.query('ROLLBACK');</span>
+<span class="cstat-no" title="statement not covered" >    return { status: false, message: 'Money could not be added' };</span>
+  } finally {
+<span class="cstat-no" title="statement not covered" >    client.release();</span>
+  }
+};
+&nbsp;
+const subtractMoneyWithTransaction = <span class="fstat-no" title="function not covered" >as</span>ync ({
+  accountNumber,
+  amount,
+  accountType,
+  transactionType,
+  senderTransactionNumber,
+  amountBeforeTransaction,
+}) =&gt; {
+  let client;
+<span class="cstat-no" title="statement not covered" >  try {</span>
+<span class="cstat-no" title="statement not covered" >    client = await pool.connect();</span>
+<span class="cstat-no" title="statement not covered" >    await client.query('BEGIN');</span>
+&nbsp;
+    const deductBalanceQuery = <span class="cstat-no" title="statement not covered" >await client.query(</span>
+      `UPDATE accounts
+              SET balance = balance - $1
+              WHERE "accountNumber" = $2 AND "accountType" = $3`,
+      [amount, accountNumber, accountType],
+    );
+<span class="cstat-no" title="statement not covered" >    if (deductBalanceQuery.rowCount === 0) { <span class="cstat-no" title="statement not covered" >throw new Error(); </span>}</span>
+&nbsp;
+    const result = <span class="cstat-no" title="statement not covered" >await client.query(</span>
+      'INSERT INTO transaction ("transactionNumber", "transactionType", "accountNo", "amount", "amountBeforeTransaction") values($1,$2,$3,$4,$5)',
+      [senderTransactionNumber, transactionType, accountNumber, -1 * amount, amountBeforeTransaction],
+    );
+<span class="cstat-no" title="statement not covered" >    if (result.rowCount === 0) { <span class="cstat-no" title="statement not covered" >throw new Error(); </span>}</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    await client.query('COMMIT');</span>
+<span class="cstat-no" title="statement not covered" >    return { status: true, message: 'added money' };</span>
+  } catch (e) {
+<span class="cstat-no" title="statement not covered" >    await client.query('ROLLBACK');</span>
+<span class="cstat-no" title="statement not covered" >    return { status: false, message: 'Money could not be added' };</span>
+  } finally {
+<span class="cstat-no" title="statement not covered" >    client.release();</span>
+  }
 };
 &nbsp;
 module.exports = {
-  getTransactionCountForAccount,
-  getUserAccountDetailsOfParticularType,
-  getTotalDepositsOfUser,
-  subtractMoney,
-  getCurrentDayWithdrawalAmount,
-  getCurrentMonthAtmWithdrawCount,
-  getMinBalance,
-  getMinBalanceOfLoanAccount,
-  loanRepaymentService,
-  depositMoneyService,
-  withdrawFromBankService,
-  withdrawFromAtmService,
-  transferMoneyService,
-  handleTransactions,
+  fetchAllTransactionOfAccount,
+  getSumOfAmountFromAccountNoAndTransactionType,
+  fetchParticularMonthTransactionCountOfAccount,
+  fetchParticularDayWithdrawAmount,
+  fetchParticularMonthAtmWithdrawCount,
+  fetchParticularMonthTransactions,
+  fetchLoanTransactions,
+  transferMoney,
+  withdrawFromAtm,
+  withdrawFromBank,
+  loanRepayment,
+  depositMoney,
+  addMoneyWithTransaction,
+  subtractMoneyWithTransaction,
 };
 &nbsp;</pre></td></tr></table></pre>
 
@@ -1279,16 +1336,16 @@ module.exports = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2023-01-25T07:31:02.334Z
+                at 2023-01-24T12:32:26.655Z
             </div>
-        <script src="../../prettify.js"></script>
+        <script src="../prettify.js"></script>
         <script>
             window.onload = function () {
                 prettyPrint();
             };
         </script>
-        <script src="../../sorter.js"></script>
-        <script src="../../block-navigation.js"></script>
+        <script src="../sorter.js"></script>
+        <script src="../block-navigation.js"></script>
     </body>
 </html>
     

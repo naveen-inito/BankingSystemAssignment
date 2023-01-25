@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for validation/users.js</title>
+    <title>Code coverage report for models/atmModel.js</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../prettify.css" />
     <link rel="stylesheet" href="../base.css" />
@@ -19,20 +19,20 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../index.html">All files</a> / <a href="index.html">validation</a> users.js</h1>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">models</a> atmModel.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">84.61% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>11/13</span>
+                <span class='fraction'>8/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>2/4</span>
+                <span class='fraction'>0/0</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">84.61% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>11/13</span>
+                <span class='fraction'>8/8</span>
             </div>
         
             
@@ -87,83 +87,53 @@
 <a name='L22'></a><a href='#L22'>22</a>
 <a name='L23'></a><a href='#L23'>23</a>
 <a name='L24'></a><a href='#L24'>24</a>
-<a name='L25'></a><a href='#L25'>25</a>
-<a name='L26'></a><a href='#L26'>26</a>
-<a name='L27'></a><a href='#L27'>27</a>
-<a name='L28'></a><a href='#L28'>28</a>
-<a name='L29'></a><a href='#L29'>29</a>
-<a name='L30'></a><a href='#L30'>30</a>
-<a name='L31'></a><a href='#L31'>31</a>
-<a name='L32'></a><a href='#L32'>32</a>
-<a name='L33'></a><a href='#L33'>33</a>
-<a name='L34'></a><a href='#L34'>34</a>
-<a name='L35'></a><a href='#L35'>35</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L25'></a><a href='#L25'>25</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">30x</span>
+<span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">30x</span>
+<span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">30x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">30x</span>
-<span class="cline-any cline-yes">30x</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">30x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/* eslint-disable newline-per-chained-call */
-// eslint-disable-next-line import/no-extraneous-dependencies
-const joi = require('joi');
-const { userExists } = require('../services/userServices');
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const { pool } = require('../db/connection');
 &nbsp;
-const validateSignUpFromJOI = (user) =&gt; {
-  const singUpSchema = joi.object({
-    id: joi.number().required(),
-    username: joi.string().regex(/^[a-z]+$/).min(3).max(40).required(),
-    name: joi.string().regex(/^[A-Za-z\s]{1,}[\.]{0,1}[A-Za-z\s]{0,}$/).min(3).max(40).required(),
-    email: joi.string().email().required(),
-    password: joi.string().min(6).required(),
-    phoneNo: joi.string().min(10).required(),
-    dob: joi.date().required(),
-    address: joi.string().min(6).required(),
-  });
-  return !!singUpSchema.validate(user).error;
+const getCardDetails = async (cardNumber) =&gt; {
+  const result = await pool.query(
+    `SELECT * FROM atm_card
+        WHERE "cardNumber" = $1 LIMIT 1`,
+    [cardNumber],
+  );
+  return result.rows[0];
 };
 &nbsp;
-const validateSignUp = async (user) =&gt; {
-  <span class="missing-if-branch" title="if path not taken" >I</span>if (validateSignUpFromJOI(user)) {
-<span class="cstat-no" title="statement not covered" >    return { success: false, message: 'invalid details' };</span>
-  }
-  const doesExists = await userExists(user.id);
-  <span class="missing-if-branch" title="if path not taken" >I</span>if (doesExists) {
-<span class="cstat-no" title="statement not covered" >    return { success: false, message: 'User already exists' };</span>
-  }
-  return { success: true, message: 'valid details' };
+const fetchCardDetailsFromAccountNumber = async (accountNumber) =&gt; {
+  const result = await pool.query(
+    `SELECT * FROM atm_card
+        WHERE "accountNumber" = $1 LIMIT 1`,
+    [accountNumber],
+  );
+  return result.rows[0];
 };
 &nbsp;
 module.exports = {
-  validateSignUpFromJOI,
-  validateSignUp,
+  getCardDetails,
+  fetchCardDetailsFromAccountNumber,
 };
 &nbsp;</pre></td></tr></table></pre>
 

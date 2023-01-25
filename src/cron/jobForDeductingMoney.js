@@ -7,8 +7,6 @@ const { fetchAccountsFromType } = require('../models/accountsModel');
 const { calculateNrvAndDeductPenalty } = require('../services/accountServices');
 const { CURRENT } = require('../utils/constants');
 
-const { formatDate } = require('../utils/utils');
-
 // This job should run "ONCE A MONTH"
 // This should only happen for "CURRENT" account
 // const jobString = '*/5 * * * * *';

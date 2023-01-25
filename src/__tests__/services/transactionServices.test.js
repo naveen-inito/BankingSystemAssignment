@@ -39,15 +39,18 @@ describe('Transaction services testing', () => {
   let userId2;
   let response1;
   let response2;
+  let client;
+  // client = await pool.connect();
   //   let userToken1;
   //   let userToken2;
 
-  beforeAll(async () => {
-    await pool.query('DELETE FROM transaction');
-    await pool.query('DELETE FROM loan_account');
-    await pool.query('DELETE FROM atm_card');
-    await pool.query('DELETE FROM accounts');
-    await pool.query('DELETE FROM users');
+  beforeEach(async () => {
+    client = await pool.connect();
+    await client.query('DELETE FROM transaction');
+    await client.query('DELETE FROM loan_account');
+    await client.query('DELETE FROM atm_card');
+    await client.query('DELETE FROM accounts');
+    await client.query('DELETE FROM users');
     await signUpUser(user1);
     await signUpUser(user2);
     userId1 = getUserId(user1.username);
@@ -70,99 +73,167 @@ describe('Transaction services testing', () => {
     cvv1 = response2.cvv;
   });
 
+  afterEach(async () => {
+    (await client).release();
+  });
+
   afterAll(async () => {
     pool.end();
   });
 
-  it('Should deposit money in savings account', async () => {
+  it('deposit money transaction should happen', async () => {
     const response = await handleTransactions({ id: userId1, accountType: 'SAVINGS', amount: 2000 });
+
     expect(response.status).toBe(true);
+    expect(typeof response.message).toBe('string');
     expect(response.message).toBe('Money added');
   });
 
-  it('Should transfer money', async () => {
+  it('transfer money transaction should not happen, since sender\'s current account does not exist for this user', async () => {
+    const response = await handleTransactions({ id: 413532, receiverUsername: 'userthree', amount: -2000 });
+
+    expect(response.status).toBe(false);
+    expect(typeof response.message).toBe('string');
+    expect(response.message).toBe('Current Account does not exist');
+  });
+
+  it('transfer money transaction should not happen, since receiver\'s current account does not exist for this user', async () => {
+    const response = await handleTransactions({ id: userId1, receiverUsername: 'userthree', amount: -2000 });
+
+    expect(response.status).toBe(false);
+    expect(typeof response.message).toBe('string');
+    expect(response.message).toBe('Receiver\'s Current Account does not exist');
+  });
+
+  it('transfer money transaction should happen', async () => {
     const response = await handleTransactions({ id: userId1, receiverUsername: 'usertwo', amount: -2000 });
+
     expect(response.status).toBe(true);
+    expect(typeof response.message).toBe('string');
     expect(response.message).toBe('Money transferred');
   });
 
-  it('Should withdraw money from atm', async () => {
+  it('Withdraw money from atm transaction should happen', async () => {
     const response = await handleTransactions({
       id: userId1, cardNumber: card1, cvv: cvv1, amount: -2000,
     });
+
     expect(response.status).toBe(true);
+    expect(typeof response.message).toBe('string');
     expect(response.message).toBe('Money withdrawn from ATM');
   });
 
-  it('Should withdraw money from bank', async () => {
+  it('Withdraw money from bank transaction should happen', async () => {
     const response = await handleTransactions({ id: userId1, accountType: 'SAVINGS', amount: -2000 });
+
     expect(response.status).toBe(true);
+    expect(typeof response.message).toBe('string');
     expect(response.message).toBe('Money withdrawn from Bank');
   });
 
-  it('Should not withdraw money from bank', async () => {
+  it('Withdraw money from bank should not happen, since withdrawal amount limit excedded', async () => {
     const response = await handleTransactions({ id: userId1, accountType: 'SAVINGS', amount: -60000 });
+
     expect(response.status).toBe(false);
+    expect(typeof response.message).toBe('string');
     expect(response.message).toBe('Amount excedded');
   });
 
-  it('Should not withdraw money from bank', async () => {
-    const response = await handleTransactions({ id: userId1, accountType: 'SAVINGS', amount: -22000 });
-    expect(response.status).toBe(false);
-    expect(response.message).toBe('Amount excedded');
-  });
-
-  it('Should repay the loan', async () => {
+  it('Loan repayment transaction should happen', async () => {
     const response = await handleTransactions({ id: userId1, accountType: 'LOAN', amount: 22000 });
+
     expect(response.status).toBe(true);
+    expect(typeof response.message).toBe('string');
     expect(response.message).toBe('Loan amount paid successfully');
   });
 
-  it('Should not repay the loan', async () => {
+  it('Loan repayment won\'t happen, since it exceeds more than 10% of loan amount', async () => {
     const response = await handleTransactions({ id: userId1, accountType: 'LOAN', amount: 100000 });
     expect(response.status).toBe(false);
+    expect(typeof response.message).toBe('string');
     expect(response.message).toBe('Loan repayment amount excedded');
   });
 
-  it('Should give count equal to 1', async () => {
-    const response = await getCurrentMonthAtmWithdrawCount(accNo1);
-    expect(response).toBe(1);
+  it('Withdraw money from atm transaction should happen', async () => {
+    const response = await handleTransactions({
+      id: userId1, cardNumber: card1, cvv: cvv1, amount: -2000,
+    });
+
+    expect(response.status).toBe(true);
+    expect(typeof response.message).toBe('string');
+    expect(response.message).toBe('Money withdrawn from ATM');
   });
 
-  it('Should give count equal to 1', async () => {
-    const response = await getCurrentMonthAtmWithdrawCount(accNo1);
-    expect(response).toBe(1);
+  it('Withdraw money from atm, should not happen, since withdrawal amount is more than 20,000', async () => {
+    const response = await handleTransactions({
+      id: userId1, cardNumber: card1, cvv: cvv1, amount: -20001,
+    });
+
+    expect(response.status).toBe(false);
+    expect(typeof response.message).toBe('string');
+    expect(response.message).toBe('Amount excedded');
   });
 
-  it('Should give amount equal to 4000', async () => {
-    const response = await getCurrentDayWithdrawalAmount(accNo1);
-    expect(response.rows[0].sum).toBe('-4000');
-  });
-
-  it('Should withdraw money from atm more than 5 times', async () => {
+  it('Will give count atm withdraw count', async () => {
+    const min = 1;
     let response;
-    for (let withdrawCounter = 1; withdrawCounter <= 5; withdrawCounter += 1) {
+    const max = 5;
+    const withdrawCount = Math.floor(Math.random() * (max - min + 1) + min);
+    for (let withdrawCounter = 1; withdrawCounter <= withdrawCount; withdrawCounter += 1) {
       response = await handleTransactions({
         id: userId1, cardNumber: card1, cvv: cvv1, amount: -2000,
       });
     }
-    expect(response.status).toBe(true);
-    expect(response.message).toBe('Money withdrawn from ATM');
+
+    response = await getCurrentMonthAtmWithdrawCount(accNo1);
+
+    expect(typeof response).toBe('number');
+    expect(response).toBe(withdrawCount);
   });
 
-  it('Should not subtract money from balance', async () => {
-    const response = await subtractMoney(1234567892, 5000, 'CURRENT');
-    expect(response.rowCount).toBe(0);
+  it('Will give withdraw amount for current day', async () => {
+    const min = 1;
+    const max = 5;
+    const minAmount = 1;
+    const maxAmount = 2000;
+    let response;
+    const withdrawCount = Math.floor(Math.random() * (max - min + 1) + min);
+    let withdrawSum = 0;
+    for (let withdrawCounter = 1; withdrawCounter <= withdrawCount; withdrawCounter += 1) {
+      const withdrawAmount = Math.floor(Math.random() * (maxAmount - minAmount + 1) + minAmount);
+      response = await handleTransactions({
+        id: userId1, cardNumber: card1, cvv: cvv1, amount: -1 * withdrawAmount,
+      });
+      withdrawSum += (-1 * withdrawAmount);
+    }
+
+    response = await getCurrentDayWithdrawalAmount(accNo1);
+    expect(response.rows[0].sum).toBe(String(withdrawSum));
+  });
+
+  it('withdraw money from atm more than 5 times, \'500\' penalty will be imposed for 6th withdraw', async () => {
+    let response;
+    for (let withdrawCounter = 1; withdrawCounter <= 6; withdrawCounter += 1) {
+      response = await handleTransactions({
+        id: userId1, cardNumber: card1, cvv: cvv1, amount: -2000,
+      });
+    }
+
+    expect(response.status).toBe(true);
+    expect(response.message).toBe('Money withdrawn from ATM');
+
+    response = await getCurrentDayWithdrawalAmount(accNo1);
+    const balanceResponse = await client.query(`SELECT balance FROM accounts WHERE "accountNumber" = ${accNo1} LIMIT 1`);
+    const { balance } = balanceResponse.rows[0];
+    expect(1000000 - (-1 * parseInt(response.rows[0].sum, 10)) - balance).toBe(500);
   });
 
   it('Should get deposits of the user', async () => {
     const userRows = await fetchUserAccounts(userId1);
     const response = await getTotalDepositsOfUser(userRows);
-    expect(response).toBeDefined();
-  });
 
-  it('Should calculate eod balance for the whole month', async () => {
-    const response = await getMinBalance(1, 2023, response1.Savings.accountNumber, response1.Savings.balance, 31);
-    expect(response.length).toBeGreaterThan(27);
+    const totalDepositResponse = await client.query(`SELECT SUM(balance) FROM accounts WHERE "userId" = ${userId1}`);
+    const totalDeposits = totalDepositResponse.rows[0].sum;
+    expect(response).toBe(parseInt(totalDeposits, 10));
   });
 });

@@ -321,7 +321,7 @@ const transferMoneyService = async (req) => {
 
   // If account is "CURRENT", then we need to put transaction charge of 0.5% of amount
   const transactionCharge = Math.min((amount / 100) * TRANSACTION_CHARGE_RATE, MAXIMUM_TRANSACTION_CHARGE_AMOUNT);
-  if ((senderAccount.balance + transactionCharge) <= amount) {
+  if ((senderAccount.balance - transactionCharge) <= amount) {
     return { status: false, message: 'Amount excedded' };
   }
 

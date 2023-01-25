@@ -56,14 +56,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # - name: Install nodejs migrate
-      #   run: npm install node-pg-migrate pg
-
-      # - name: migrate database
-      #   run: node migrate.js
-      #   env:
-      #     DBURL: "postgres://postgres:postgres@localhost:5432/banksystem"
-
       - name: Query database
         run: psql -U postgres -d banksystem_dummy -h localhost -p 5432 -f creation.sql
         env:

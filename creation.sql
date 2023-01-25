@@ -6,17 +6,17 @@
 
 -- Create users table
 CREATE TABLE users (
-  		id INTEGER PRIMARY KEY,
-		name VARCHAR(32) NOT NULL,
-		username VARCHAR(32) NOT NULL,
-		email VARCHAR(32) NOT NULL,
-		password VARCHAR(255) NOT NULL,
-        dob Date NOT NULL,
-        "phoneNo" VARCHAR(15) NOT NULL,
-        address VARCHAR(255) NOT NULL,
-		unique(email),
-		unique(username)
-	);
+    id INTEGER PRIMARY KEY,
+    name VARCHAR(32) NOT NULL,
+    username VARCHAR(32) NOT NULL,
+    email VARCHAR(32) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    dob Date NOT NULL,
+    "phoneNo" VARCHAR(15) NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    unique(email),
+    unique(username)
+);
 
 
 -- Create accounts query

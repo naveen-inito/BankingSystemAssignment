@@ -6,7 +6,7 @@
   "scripts": {
     "test:watch": "jest --watch",
     "start": "nodemon src/server.js",
-    "test": "jest --no-cache --runInBand --forceExit --coverage",
+    "test": "jest --detectOpenHandles --no-cache --runInBand --forceExit --coverage",
     "migrate": "node-pg-migrate"
   },
   "author": "",
@@ -18,8 +18,6 @@
     "express": "^4.18.2",
     "joi": "^17.7.0",
     "jsonwebtoken": "^9.0.0",
-    "node-cron": "^3.0.2",
-    "node-pg-migrate": "^6.2.2",
     "node-schedule": "^2.1.0",
     "pg": "^8.8.0"
   },
