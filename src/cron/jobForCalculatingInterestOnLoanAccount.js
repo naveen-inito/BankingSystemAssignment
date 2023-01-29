@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 const schedule = require('node-schedule');
 const { fetchActiveLoanAccounts } = require('../models/loanAccountModel');
 const { addInterestOnLoanAccount } = require('../services/accountServices');

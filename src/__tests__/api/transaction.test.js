@@ -111,7 +111,7 @@ describe('Testing transaction api', () => {
     expect(response.body.message).toBe('Money withdrawn from ATM');
   });
 
-  it('Test to withdraw money from bank', async () => {
+  it('withdraw from bank will happen', async () => {
     request = supertest(app);
 
     const response = await request.put('/api/account').send({
@@ -124,7 +124,7 @@ describe('Testing transaction api', () => {
     expect(response.body.message).toBe('Money withdrawn from Bank');
   });
 
-  it('Test to get account details', async () => {
+  it('User\'s account details will be fetched', async () => {
     request = supertest(app);
 
     const response = await request.get('/api/account').send().set('Authorization', `Bearer ${token1}`);
@@ -159,7 +159,7 @@ describe('Testing transaction api', () => {
     // Can cross check it, by making a query on DB
   });
 
-  it('Test to get passbook of user', async () => {
+  it('User\'s passbook will be fetched', async () => {
     request = supertest(app);
 
     const response1 = await request.put('/api/account').send({
